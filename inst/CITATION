@@ -1,0 +1,19 @@
+citHeader("To cite forceR in publications use:")
+
+citEntry(entry = "Article",
+  title        = "forceX and forceR: a mobile setup and R package to measure and analyze a wide range of animal closing forces",
+  author       = personList(as.person("Peter T. Rühr"),
+                   as.person("Alexander Blanke")),
+  journal      = "Methods in Ecology and Evolution",
+  year         = "2022",
+  volume       = "x",
+  number       = "x",
+  pages        = "x--x",
+  url          = "https://github.com/Peter-T-Ruehr/forceR",
+
+  textVersion  =
+  paste("Peter T. Rühr, Alexander Blanke (in press).",
+        "forceX and forceR: a mobile setup and R package to measure and analyze a wide range of animal closing forces.",
+        "Methods in Ecology and Evolution, x(x), x-x.",
+        "URL https://github.com/Peter-T-Ruehr/forceR.")
+)
