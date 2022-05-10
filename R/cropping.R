@@ -68,7 +68,7 @@ convert_measurement <- function (file,
   # if(write.files == TRUE){
   if(!is.null(path.data)){
     write_csv(data, file.path(path.data,
-                              paste0(gsub("\\.dat$", "_cropped\\.csv", basename(file)))),
+                              paste0(gsub("\\.dat$", "_converted\\.csv", basename(file)))),
               quote = "none")
   }
   return(data)
@@ -87,6 +87,19 @@ convert_measurement <- function (file,
 #' @details Select points at start and end of desired part of measurements.
 #' Only the last two points will be
 #'   taken into account to allow the user to correct erroneous clicks.
+#'
+#' If a measurement contains two distinct regions of bites with a lot of
+#' unnecessary data and/or measurement artefacts in-between (such as user-made
+#' peaks), I recommend to manually copy the RAW data files, give the copy a
+#' new measurement number (as if it was actually a separate measurement), and
+#' crop the distinct parts containing actual bites separately from the two
+#' copies of the file. For more distinct regions, create more copies.
+#'
+#' I recommend to not crop the files too much in case baseline corrections are
+#' needed later, because then the `baseline_corr()` function will not be able
+#' to figure out where the actual baseline might be. Leaving several seconds
+#' before and after the first and last bite of a series will prevent such
+#' problems.
 #'
 #' @return Returns and, if `path.data is not NULL`, saves data in
 #' csv-format in `path.data`. \cr

@@ -1,7 +1,8 @@
-81628de6c8688fbd70aba521d2c88b67 *DESCRIPTION
+d41de4ccac76044f5e72ad22e4e069c2 *DESCRIPTION
 9c9a18a35be1afc060d8c2f00eb73e71 *LICENSE
 7bd65ebc41cc56feae58e84cf5bd6a82 *NAMESPACE
-ca44beeacbcec373e9d51dbe173710cd *R/cropping.R
+f961259c30f47375ffe33aa62d5b64dd *NEWS.md
+fee807baa355d7f99dc0666ff5e072e8 *R/cropping.R
 242717df503fa4b0a719a3ee827a3c45 *R/data.R
 46c83db829a58343e81d76d22b578092 *R/drift_corrections_03.R
 8622b8182379d95aa9bebe58928db20b *R/file_sorting.R
@@ -12,8 +13,8 @@ f93ca5b1ed90075f764b41af4d996685 *R/peak_finding.R
 2431bac04b20a0680f65d6f89669ee9a *R/plotting.R
 3095faceaab4b9415f450ac813b7c4c6 *R/polynomial.R
 62572155de9b479fd415eaa2077a3f0c *R/summarizing.R
-dedb4ec054092a0e5baa673c3e30b5ae *R/time_series_manipulations.R
-531aa07ae86d5f1b042b9c69b2281303 *README.md
+59dba8a85e14a0bfa12df5ec9299d463 *R/time_series_manipulations.R
+e3deb792d9a3acf9e0b673c526aec8be *README.md
 6fade1f1a41f0e26f1d7689d9631d08e *build/vignette.rds
 f83bbe693200de73cacec06127a2ea2e *data/classifier.rda
 c8ebe9fc5ad7405c63bdb0294efb66dd *data/df.all.200.rda
@@ -25,9 +26,9 @@ bb9c08c1a940b186b2f4d4c8738a5376 *data/peaks.df.100.avg.rda
 8211b35ac411bffe804e5590c2eeb888 *data/peaks.df.norm.rda
 ca165b1899a21ac5f4f6204eb10f02d9 *data/peaks.df.rda
 5c2288eae245ec673390b5f7d7f7f95e *inst/CITATION
-47f86400d9266881e377508203dc8fa4 *inst/doc/forceR.R
-2d409ae94904d2c3b0c3742deaa8e77b *inst/doc/forceR.Rmd
-c31e7e5454af6a042c12f1b8907986e0 *inst/doc/forceR.html
+b94ad2e78ef516a589b3401ab3f38cf6 *inst/doc/forceR.R
+de23cc9304bf871319ec9b801929d9ae *inst/doc/forceR.Rmd
+02216464109ce87b1818555f5c40a912 *inst/doc/forceR.html
 2b6d552f3cdc0839d09d5fbb70bd9f9a *inst/extdata/LJStream/0001_C_big_LJStream_0.dat
 5e257113090db108d71a40a5bf9e57d6 *inst/extdata/ampdriftcorr/0001_C_big_ampdriftcorr.csv
 11686e1f240b4380f3dfdcb49cce6a1f *inst/extdata/raw/0001_C_big.csv
@@ -37,7 +38,7 @@ e08f3f9ba3cffb1e86d5cc39b8f82aa4 *man/baseline_corr.Rd
 9ddf03ed763827217b414c82450c9318 *man/classifier.Rd
 2c4fd9e7cc1ff4fd69f8973cb6797e2b *man/convert_measurement.Rd
 90e3ee1252d0be9fb2133e8a8ca18a02 *man/correct_peak.Rd
-63fc51e642f01da0a7487417153d5f77 *man/crop_measurement.Rd
+dd2e3d3532ffce513b1b53d1551c03b6 *man/crop_measurement.Rd
 8637a47d0a818a45d469855caabda2d6 *man/df.all.200.Rd
 6ea5b6a059d2b63a483f1c3fcb4421d0 *man/df.all.200.tax.Rd
 dfb3ab972831b94db13c0b0392f96daf *man/df.all.Rd
@@ -63,8 +64,8 @@ fc78f4385485436fa6662b59d340f89c *man/rescale_to_range.Rd
 ba62ced46da1f86977fa275d803ba93e *man/sort_files.Rd
 0104a06fbec77eb45bed26ef57b3a9d8 *man/summarize_measurements.Rd
 b01f59e3b30dbb2a852bff226e7d2835 *man/today.Rd
-931caa7541bf39b6cede6e716e1b5831 *man/y_to_force.Rd
-2d409ae94904d2c3b0c3742deaa8e77b *vignettes/forceR.Rmd
+2b6fc763bfbab055b605b30b4a4268b6 *man/y_to_force.Rd
+de23cc9304bf871319ec9b801929d9ae *vignettes/forceR.Rmd
 adafdcb75212feb302da3f0d0f3ed025 *vignettes/imgs/all_bite_curves.png
 f58659e457a308aa698dc8c9e8e91019 *vignettes/imgs/ampdriftcorr_0980.png
 c58275ed58297b2229ad83f5d95000e5 *vignettes/imgs/ampdriftcorr_0982.png

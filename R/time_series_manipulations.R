@@ -136,8 +136,8 @@ reduce_frq <- function (df,
 #' | `...` | `...` | `...` | `...` | `...`  |
 #' | `species.n` | `specimen.n` | `measurement.n` | `amp.n` | `lever.ratio.n` |
 #'
-#' If one one or both of the columns `amp` or `lever.ratio` are missing, these variables will be treated as `1`,
-#'   i.e., the force data was not amplified and/or there was no lever in the measurement setup.
+#' It must contain one row per unique measurement number that is present in the
+#' df.
 #'
 #'   The force (`F`) in Newton is calculated *via* the following formula:
 #'
@@ -152,23 +152,29 @@ reduce_frq <- function (df,
 #' | **`t`** | **`y`** | **`measurement`** |
 #' | :----: | :----: | :----: |
 #' | `t.1` | `y.1` | `measurement.1` |
+#' | `t.2` | `y.2` | `measurement.1` |
 #' | `...` | `...` | `...` |
-#' | `t.n` | `y.n` | `measurement.n` |
+#' | `t.n` | `y.n` | `measurement.1` |
+#' | `t.1` | `y.1` | `measurement.2` |
+#' | `t.2` | `y.2` | `measurement.2` |
+#' | `...` | `...` | `...` |
+#' | `t.m` | `y.m` | `measurement.2` |
+#' | `...` | `...` | `...` |
+#' | `t.o` | `y.o` | `measurement.o` |
 #'
-#' @param df Data frame or tibble in the below mentioned format.
+#' @param df Data frame or tibble in the below mentioned format. This should contain the time series, with
+#' one line per time step and measurement.
 #' @param classifier Classifier in the below mentioned format.
 #' @param measurement.col Character string. If `measurement.col` is not defined, the whole input data frames will be
 #'   treated as if it was just one single time series. This is okay for data frames like that indeed only contain one
 #'   time series, but for data frames
 #'   with multiple time series, a grouping column needs to be defined. Default: `NULL`
 #' @return Returns a tibble reduced in the same format as the input tibble with an additional column called '"'`force`'.
-#' @examples#'
-#' # Using the forceR::df.all.200 dataset and the forceR::classifier:
-#'
+#' @examples
 #' # convert y column of df.all to force column and add taxonomic data
 #' # using info from classifier
-#' df.all.tax <- y_to_force(df = df.all.200,
-#'                       classifier = classifier,
+#' df.all.tax <- y_to_force(df = forceR::df.all.200,
+#'                       classifier = forceR::classifier,
 #'                       measurement.col = "measurement")
 #'
 #' df.all.tax
@@ -178,8 +184,8 @@ y_to_force <- function (df,
                         classifier,
                         measurement.col){
 
-  if(sum(colnames(df) %in% c("t", "y")) != 2){
-    stop ("column names of 'df' must contain 't', 'y'.")
+  if(sum(colnames(df) %in% c("t", "y", "measurement")) != 3){
+    stop ("column names of 'df' must contain 't', 'y', and 'measurement'.")
   }
   if(sum(colnames(classifier) %in% c("species", "specimen", "amp", "lever.ratio")) != 4){
     stop ("column names of 'classifier' must contain 'species', 'specimen', 'amp', 'lever.ratio'.")
@@ -189,6 +195,14 @@ y_to_force <- function (df,
   }
   if(!is.null(measurement.col) & sum(colnames(df) %in% measurement.col) != 1){
     stop (paste0("column names of 'df' must contain '", measurement.col, "' as defined in 'measurement.col'."))
+  }
+  if(length(setdiff(classifier$measurement, unique(df$measurement))) != 0){
+    stop ("The following measuremnt numbers are missing from the df:\n",
+          setdiff(classifier$measurement, unique(df$measurement)))
+  }
+  if(length(setdiff(unique(df$measurement), classifier$measurement)) != 0){
+    stop ("The following measuremnt numbers are missing from the classifier:\n",
+          setdiff(unique(df$measurement), classifier$measurement))
   }
 
   amp <- lever.ratio <- y <- species <- specimen <- NULL

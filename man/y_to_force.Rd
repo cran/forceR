@@ -7,7 +7,8 @@
 y_to_force(df, classifier, measurement.col)
 }
 \arguments{
-\item{df}{Data frame or tibble in the below mentioned format.}
+\item{df}{Data frame or tibble in the below mentioned format. This should contain the time series, with
+one line per time step and measurement.}
 
 \item{classifier}{Classifier in the below mentioned format.}
 
@@ -36,8 +37,8 @@ The \code{classifier} should have the following format:\tabular{ccccc}{
 }
 
 
-If one one or both of the columns \code{amp} or \code{lever.ratio} are missing, these variables will be treated as \code{1},
-i.e., the force data was not amplified and/or there was no lever in the measurement setup.
+It must contain one row per unique measurement number that is present in the
+df.
 
 The force (\code{F}) in Newton is calculated \emph{via} the following formula:
 
@@ -50,18 +51,22 @@ and \code{lever.ratio} is the mechanical lever ratio of the measurement setup.
 \code{df} should have the following format:\tabular{ccc}{
    \strong{\code{t}} \tab \strong{\code{y}} \tab \strong{\code{measurement}} \cr
    \code{t.1} \tab \code{y.1} \tab \code{measurement.1} \cr
+   \code{t.2} \tab \code{y.2} \tab \code{measurement.1} \cr
    \code{...} \tab \code{...} \tab \code{...} \cr
-   \code{t.n} \tab \code{y.n} \tab \code{measurement.n} \cr
+   \code{t.n} \tab \code{y.n} \tab \code{measurement.1} \cr
+   \code{t.1} \tab \code{y.1} \tab \code{measurement.2} \cr
+   \code{t.2} \tab \code{y.2} \tab \code{measurement.2} \cr
+   \code{...} \tab \code{...} \tab \code{...} \cr
+   \code{t.m} \tab \code{y.m} \tab \code{measurement.2} \cr
+   \code{...} \tab \code{...} \tab \code{...} \cr
+   \code{t.o} \tab \code{y.o} \tab \code{measurement.o} \cr
 }
 }
 \examples{
-#'
-# Using the forceR::df.all.200 dataset and the forceR::classifier:
-
 # convert y column of df.all to force column and add taxonomic data
 # using info from classifier
-df.all.tax <- y_to_force(df = df.all.200,
-                      classifier = classifier,
+df.all.tax <- y_to_force(df = forceR::df.all.200,
+                      classifier = forceR::classifier,
                       measurement.col = "measurement")
 
 df.all.tax

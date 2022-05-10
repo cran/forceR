@@ -412,25 +412,52 @@ ggplot(models.df,
   geom_line()
 
 ## ----eval=FALSE, warning=FALSE, message=FALSE---------------------------------
-#  require(gsheet)
-#  require(ggplot2)
-#  require(grid)
-#  require(reshape)
-#  require(dplyr)
+#  ## ---------------------------
+#  ##
+#  ## PURPOSE OF SCRIPT:
+#  ##      Simulate data and test various functions of the forceR package.
+#  ##
+#  ##
+#  ## AUTHOR:
+#  ##      Peter T. Rühr
+#  ##
+#  ## DATE CREATED:
+#  ##      2022-04-07
+#  ##
+#  ## Copyright (c) Peter T. Rühr, 2022
+#  ## Email: peter.ruehr@gmail.com
+#  ##
+#  ## ---------------------------
+#  ##
+#  ## NOTES:
+#  ##
+#  ##
+#  ##
+#  ##  -------------------------------------------------------------------------
+#  ##  DEPENDENCIES
 #  
+#  # to use viewport()
+#  require(grid)
+#  
+#  # forceR
 #  require(forceR)
 #  
-#  # PREPARTIONS ####
-#  # set seed for randomization so results are reproducible
-#  set.seed(1)
+#  # various plotting functions
+#  require(ggplot2)
 #  
-#  # DEFINE SOME FUNCTIONS
+#  # load tidyverse for its various conveniences
+#  require(tidyverse)
+#  
+#  
+#  ##  -------------------------------------------------------------------------
+#  ##  FUNCTIONS
+#  # get data as string for saving files
 #  today <- function(){
 #    date.string <- gsub("-", "_", substring(as.character(as.POSIXct(Sys.time())), 1, 10))
 #    return(date.string)
 #  }
 #  
-#  # plot linear regression
+#  # plot linear regression and return relevant values
 #  plot.linear.regression <- function(x, y,
 #                                     logarithmic = F,
 #                                     x.axis.label = "x",
@@ -485,31 +512,37 @@ ggplot(models.df,
 #    return(res)
 #  }
 #  
-#  # add leading zeros function
+#  # add leading zeros to number and return as string
 #  add_eading_zeros <- function(number, length){
 #    require(stringr)
 #    str_pad(number, length, pad = "0")
 #  }
-#  # /DEFINE SOME FUNCTIONS
 #  
 #  
-#  # create classifier
+#  ## -------------------------------------------------------------------------
+#  ## Simulate bite force data
+#  # set seed for randomization so results are reproducible
+#  set.seed(1)
+#  
+#  
+#  ## -------------------------------------------------------------------------
+#  ## Create classifier to store data (1 row per measurement)
 #  classifier <- tibble(bite.type = c(rep("sinosoidal", 5), rep("plateau", 3), rep("inter", 4)),
-#                       peak.position = c("early","early","center","late","late","center","center","center","center","center","early","late"),
-#                       species = NA,
-#                       specimen = NA,
-#                       measurement = NA,
-#                       body_mass = NA,
-#                       force_in = NA,
-#                       length.of.bite = 4000,
-#                       peak.pos = c(20, 25, 50, 65, 70, rep(NA, 7)),
-#                       slope.perc.starts = c(rep (NA, 5), 10,15,20,30,40,20,50),
-#                       slope.perc.ends = c(rep (NA, 5), 10,15,20,30,40,50,20),
-#                       type = c(rep("sin", 5), rep("plat", 7)),
-#                       no.of.bites = 7,
-#                       amp = 1,
-#                       lever.ratio = 1,
-#                       length.of.series = 35000)
+#                                              peak.position = c("early","early","center","late","late","center","center","center","center","center","early","late"),
+#                                              species = NA,
+#                                              specimen = NA,
+#                                              measurement = NA,
+#                                              body_mass = NA,
+#                                              force_in = NA,
+#                                              length.of.bite = 4000,
+#                                              peak.pos = c(20, 25, 50, 65, 70, rep(NA, 7)),
+#                                              slope.perc.starts = c(rep (NA, 5), 10,15,20,30,40,20,50),
+#                                              slope.perc.ends = c(rep (NA, 5), 10,15,20,30,40,50,20),
+#                                              type = c(rep("sin", 5), rep("plat", 7)),
+#                                              no.of.bites = 7,
+#                                              amp = 1,
+#                                              lever.ratio = 1,
+#                                              length.of.series = 35000)
 #  
 #  
 #  # amend classifier
@@ -547,8 +580,8 @@ ggplot(models.df,
 #  }
 #  classifier$species <- species.names
 #  
-#  classifier$specimen <- paste0("s_", add_eading_zeros(1:nrow(classifier), 2))
-#  classifier$measurement <- paste0("m_", add_eading_zeros(1:nrow(classifier), 2))
+#  classifier$specimen <- paste0("s", add_eading_zeros(1:nrow(classifier), 3))
+#  classifier$measurement <- paste0("m", add_eading_zeros(1:nrow(classifier), 3))
 #  
 #  # assign body mass according to the maximum force
 #  classifier$body_mass[classifier$force_in == forces[1]] <- 1
@@ -562,7 +595,10 @@ ggplot(models.df,
 #    classifier$body_mass[i] <- round(classifier$body_mass[i] +
 #                                       ((rnorm(1, -0.2, 0.2)) * classifier$body_mass[i]), 2)
 #  }
-#  # /amend classifier
+#  
+#  
+#  # -------------------------------------------------------------------------
+#  # data processing
 #  
 #  # get overview of input data before simulating bite series
 #  BFQ.regression_in <- plot.linear.regression(x = classifier$body_mass,
@@ -585,13 +621,7 @@ ggplot(models.df,
 #  # create tibble with simulated time series with different
 #  # bite characteristics for each measurement, specimen and species
 #  
-#  # Plots to PDFs are sometimes out-commented so that plots will appear on screen.
-#  # You may change this according to your own needs.
-#  # modify the following folders to fit your local system and make sure they exist:
-#  # plot output folder
-#  path.plots <- "C:/Users/pruehr.EVOLUTION/Desktop/plots/"
-#  # data output folder
-#  path.data <- "C:/Users/pruehr.EVOLUTION/Desktop/data/"
+#  # path.plots <- "Z:/PAPERS/PTR_Bite force METHODS/R/package_tests/plots/"
 #  # print(paste0("Saving plots at ", path.plots, "/", today(),"_bite_series.pdf..."))
 #  # pdf(paste0(path.plots, "/", today(),"_bite_series.pdf..."), onefile = TRUE, paper = "a4", height = 14)
 #  par(mfrow = c(3,2))
@@ -617,7 +647,6 @@ ggplot(models.df,
 #    df.all <- rbind(df.all, df.curr)
 #  }
 #  # dev.off()
-#  par(mfrow = c(1,1))
 #  
 #  # remove columns from classifier that were only used during bite series simulation
 #  classifier <- classifier %>%
@@ -626,11 +655,12 @@ ggplot(models.df,
 #              type, no.of.bites))
 #  
 #  
-#  # forceR WORKFLOW AFTER FILE LOADING ####
+#  # here starts a forceR WORKFLOW for AFTER FILE LOADING ####
 #  # please see the package vignette for details on how to load files.
 #  
 #  # reduce sampling frequency to 200 Hz
-#  df.all.200 <- reduce_frq(df.all, Hz = 200,
+#  df.all.200 <- reduce_frq(df = df.all,
+#                           Hz = 200,
 #                           measurement.col = "measurement")
 #  
 #  # convert y values to force and add measurement columns from classifier info (df.all)
@@ -639,24 +669,28 @@ ggplot(models.df,
 #                               measurement.col = "measurement")
 #  
 #  # summarize force data per specimen
-#  var1 = "measurement"
-#  var2 = "specimen"
 #  df.summary.specimen <- summarize_measurements(df = df.all.200.tax,
-#                                                var1, var2)
+#                                                var1 = "measurement",
+#                                                var2 = "specimen")
 #  
 #  # add body mass from classifier:
 #  df.summary.specimen <- df.summary.specimen %>%
 #    left_join(classifier %>%
-#                select(measurement, body_mass))
+#                select(measurement, body_mass),
+#              by = "measurement")
 #  
 #  # boxplot of maximum force of all specimens
 #  ggplot(data = df.summary.specimen, mapping = aes(x=specimen,y=max.F.measurement)) +
-#    geom_jitter(color='blue',alpha=0.5, width = 0.2, height = 0.0) +
+#    geom_jitter(color='blue',alpha=0.5, width = 0.2) +
 #    geom_boxplot(fill="blue",color="black",alpha=0.1) +
 #    # scale_y_log10() +
 #    labs(x='specimen', y="max(F)/specimen") +
 #    guides(color="none") +
-#    theme_minimal()
+#    theme_minimal() +
+#    ggtitle("max. bite force per measurement") +
+#    xlab("specimen") +
+#    ylab("max. force (N)") +
+#    theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 5))
 #  
 #  # Summarize to species-wise info
 #  # We are not using the summarize_measurements() functions because this would ignore
@@ -675,7 +709,8 @@ ggplot(models.df,
 #    mutate(n.specimens.in.species = length(unique(specimen))) %>%
 #    # add body mass from classifier
 #    left_join(classifier %>%
-#                select(measurement, body_mass)) %>%
+#                select(measurement),
+#              by = c("measurement")) %>%
 #    # calculate mean body mass per species
 #    group_by(species) %>%
 #    mutate(body_mass.species = mean(body_mass)) %>%
@@ -683,12 +718,16 @@ ggplot(models.df,
 #  
 #  # boxplot of maximum force in species
 #  ggplot(data = df.summary.species, mapping = aes(x=species,y=mean.F.species)) +
-#    geom_jitter(color='blue',alpha=0.5, width = 0.2, height = 0.0) +
+#    geom_jitter(color='blue',alpha=0.5, width = 0.2) +
 #    geom_boxplot(fill="blue",color="black",alpha=0.1) +
 #    # scale_y_log10() +
 #    labs(x='species', y="mean(F)/species") +
 #    guides(color="none") +
-#    theme_minimal()
+#    theme_minimal() +
+#    ggtitle("max. bite force per species") +
+#    xlab("species") +
+#    ylab("max. force (N)") +
+#    theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 5))
 #  
 #  # calculate and plot the regressions of known (simulation inputs) and extracted forces over body length
 #  # pdf(file = paste0(path.plots, today(), "_regressions.pdf"),
@@ -719,7 +758,8 @@ ggplot(models.df,
 #  force.comp <- classifier %>%
 #    select(measurement, force_in) %>%
 #    left_join(df.summary.specimen %>%
-#                select(measurement, max.F.measurement)) %>%
+#                select(measurement, max.F.measurement),
+#              by = "measurement") %>%
 #    mutate(diff.abs = max.F.measurement - force_in,
 #           diff.perc = diff.abs*100/force_in) %>%
 #    arrange(diff.perc)
@@ -729,8 +769,8 @@ ggplot(models.df,
 #    geom_jitter(color='blue',alpha=0.7, width = 0.1) +
 #    geom_violin(fill="blue",color="black",alpha=0.1) +
 #    # scale_y_log10() +
-#    labs(x='', y="diff. pred/actual [%") +
-#    guides(color=FALSE) +
+#    labs(x='', y="diff. pred/actual [%]") +
+#    guides(color="none") +
 #    theme_minimal()
 #  
 #  # extract coefficients of species-wise regression
@@ -746,29 +786,27 @@ ggplot(models.df,
 #  hist(df.summary.species$BFQ.body_mass, breaks = 25)
 #  
 #  # INDIVIDUAL BITE CURVE FINDING
-#  # plots will be shown in the current R plot device ('plot.to.screen = TRUE') and
-#  #   will also be saved to PDF because path.plots defined.
-#  peaks.df <- find_strongest_peaks(df = df.all.200.tax,
-#                                   no.of.peaks = 5,
-#                                   plot.to.screen = TRUE,
-#                                   path.data = path.data,
-#                                   path.plots = path.plots,
-#                                   show.progress = TRUE)
+#  # find five strongest peaks per species
+#  peaks.df <- find_strongest_peaks(
+#    df = df.all.200.tax,
+#    no.of.peaks = 5,
+#    plot.to.screen = FALSE,
+#    path.data = NULL,
+#    path.plots = NULL,
+#    show.progress = TRUE)
 #  
 #  # save plots of every peak in a PDF
 #  plot_peaks(df.peaks = peaks.df,
 #             df.data = df.all.200.tax,
 #             additional.msecs = 2000,
-#             plot.to.screen = TRUE,
-#             path.plots = path.plots,
+#             path.plots = NULL,
 #             show.progress = TRUE)
-#  
 #  
 #  # rescale bites
 #  peaks.df.norm <- rescale_peaks(df.peaks = peaks.df,
 #                                 df.data = df.all.200.tax,
-#                                 plot.to.screen = TRUE,
-#                                 path.data = path.data,
+#                                 plot.to.screen = FALSE,
+#                                 path.data = NULL,
 #                                 show.progress = TRUE)
 #  
 #  # check if rescaling worked: both following lines should print 1
@@ -778,25 +816,26 @@ ggplot(models.df,
 #  # reduce to 100 observations per bite
 #  peaks.df.norm.100 <- red_peaks_100(df = peaks.df.norm,
 #                                     plot.to.screen = TRUE,
-#                                     path.data = path.data,
-#                                     path.plots = path.plots,
+#                                     path.plots = NULL,
+#                                     path.data = NULL,
 #                                     show.progress = TRUE)
 #  
 #  # get average bite curve per species
 #  peaks.df.100.avg <- avg_peaks(df = peaks.df.norm.100,
-#                                path.data = path.data)
+#                                path.data = NULL)
 #  
 #  # find best polynomial degree to describe all average curves
 #  best.fit.poly <- find_best_fits(df = peaks.df.100.avg,
 #                                  plot.to.screen = FALSE,
-#                                  path.data = path.data,
-#                                  path.plots = path.plots,
+#                                  path.data = NULL,
+#                                  path.plots = NULL,
 #                                  show.progress = TRUE)
+#  
 #  
 #  # convert species-wise average curves to polynomial models
 #  models <- peak_to_poly(df = peaks.df.100.avg,
 #                         coeff = best.fit.poly,
-#                         path.data = path.data,
+#                         path.data = NULL,
 #                         show.progress = TRUE)
 #  
 #  # convert models to PCA input data
@@ -815,21 +854,19 @@ ggplot(models.df,
 #  PCA.res <- as_tibble(PCA.bite.shape$x[,1:3]) %>%
 #    mutate(species = rownames(PCA.bite.shape$x)) %>%
 #    left_join(classifier %>%
-#                select(bite.type, peak.position, species)) %>%
+#                select(bite.type, peak.position, species),
+#              by = "species") %>%
 #    select(bite.type, peak.position, species, PC1, PC2) %>%
 #    distinct(species, .keep_all = TRUE) %>%
 #    dplyr::rename(peak.position = peak.position,
 #                  bite.type = bite.type)
 #  
 #  # plot PC1 against PC2
-#  # pdf(file = paste0(path.plots, today(), "_PCA_bite_shape_type.pdf"),
-#  #     paper = "a4r", width = 29, height = 21) # , height = 14
 #  ggplot(data = PCA.res, aes(x = PC1, y = PC2, col = bite.type)) +
 #    geom_point() +
 #    theme_minimal()
-#  # dev.off()
 #  
-#  # pdf(file = paste0(path.plots, today(), "_PCA_bite_shape_position.pdf"),
+#  # pdf(file = paste0(path.plots, today(), "_PCA_bite_shape.pdf"),
 #  #     paper = "a4r", width = 29, height = 21) # , height = 14
 #  ggplot(data = PCA.res, aes(x = PC1, y = PC2, col = peak.position)) +
 #    geom_point() +
@@ -848,9 +885,9 @@ ggplot(models.df,
 #          axis.title.y=element_blank(),
 #          axis.text.y=element_blank(),
 #          axis.ticks.y=element_blank(),
-#          legend.position = "none") +
-#    theme_minimal()
+#          legend.position = "none")
 #  print(main_plot)
+#  
 #  
 #  # create an and plot an inlet with the bite shape
 #  # of the first bite of the first
@@ -883,4 +920,5 @@ ggplot(models.df,
 #    print(inset_plot, vp = vp)
 #  }
 #  # dev.off()
+#  
 
