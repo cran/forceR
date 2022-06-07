@@ -18,7 +18,7 @@ time series, but for data frames
 with multiple time series, a grouping column needs to be defined. Default: \code{NULL}}
 }
 \value{
-Returns a tibble reduced in the same format as the input tibble with an additional column called '"'\code{force}'.
+Returns a tibble in the same format as the input tibble with an additional column called '"'\code{force}'.
 }
 \description{
 Converts a time series, e.g. a continuous voltage measurement from a sensor to force data

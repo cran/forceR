@@ -202,6 +202,11 @@ df.all.200.tax <- y_to_force(df = df.all.200,
 head(df.all.200.tax)
 
 ## ----eval=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height=6-----
+# add species to df.all.200.tax
+df.all.200.tax <- df.all.200.tax %>% 
+  left_join(classifier %>% 
+              select(species, measurement))
+
 var1 = "measurement"
 var2 = "specimen"
 df.summary.specimen <- summarize_measurements(df.all.200.tax, 
@@ -264,8 +269,7 @@ path.plots <- file.path(data.folder, "/plots/")
 
 ## ----eval=TRUE, warning=FALSE, message=FALSE, include=FALSE-------------------
 peaks.df <- find_strongest_peaks(df = df.all.200.tax, 
-                                 no.of.peaks = 5, 
-                                 plot.to.screen = FALSE,
+                                 no.of.peaks = 5,
                                  path.data = NULL,
                                  path.plots = NULL,
                                  show.progress = FALSE)
@@ -273,7 +277,6 @@ peaks.df <- find_strongest_peaks(df = df.all.200.tax,
 ## ----eval=FALSE, warning=FALSE, message=FALSE---------------------------------
 #  peaks.df <- find_strongest_peaks(df = df.all.200.tax,
 #                                   no.of.peaks = 5,
-#                                   plot.to.screen = TRUE,
 #                                   path.data = path.data,
 #                                   path.plots = path.plots,
 #                                   show.progress = TRUE)
@@ -419,12 +422,12 @@ ggplot(models.df,
 #  ##
 #  ##
 #  ## AUTHOR:
-#  ##      Peter T. Rühr
+#  ##      Peter T. RÃ¼hr
 #  ##
 #  ## DATE CREATED:
 #  ##      2022-04-07
 #  ##
-#  ## Copyright (c) Peter T. Rühr, 2022
+#  ## Copyright (c) Peter T. RÃ¼hr, 2022
 #  ## Email: peter.ruehr@gmail.com
 #  ##
 #  ## ---------------------------
@@ -440,7 +443,10 @@ ggplot(models.df,
 #  require(grid)
 #  
 #  # forceR
-#  require(forceR)
+#  install.packages("C:/Users/pruehr.EVOLUTION/Documents/forceR",
+#                   repos = NULL,
+#                   type = "source")
+#  library(forceR)
 #  
 #  # various plotting functions
 #  require(ggplot2)
@@ -655,9 +661,6 @@ ggplot(models.df,
 #              type, no.of.bites))
 #  
 #  
-#  # here starts a forceR WORKFLOW for AFTER FILE LOADING ####
-#  # please see the package vignette for details on how to load files.
-#  
 #  # reduce sampling frequency to 200 Hz
 #  df.all.200 <- reduce_frq(df = df.all,
 #                           Hz = 200,
@@ -667,6 +670,11 @@ ggplot(models.df,
 #  df.all.200.tax <- y_to_force(df = df.all.200,
 #                               classifier = classifier,
 #                               measurement.col = "measurement")
+#  
+#  # add species to df.all.200.tax
+#  df.all.200.tax <- df.all.200.tax %>%
+#    left_join(classifier %>%
+#                select(species, measurement))
 #  
 #  # summarize force data per specimen
 #  df.summary.specimen <- summarize_measurements(df = df.all.200.tax,
@@ -790,7 +798,6 @@ ggplot(models.df,
 #  peaks.df <- find_strongest_peaks(
 #    df = df.all.200.tax,
 #    no.of.peaks = 5,
-#    plot.to.screen = FALSE,
 #    path.data = NULL,
 #    path.plots = NULL,
 #    show.progress = TRUE)
@@ -888,7 +895,6 @@ ggplot(models.df,
 #          legend.position = "none")
 #  print(main_plot)
 #  
-#  
 #  # create an and plot an inlet with the bite shape
 #  # of the first bite of the first
 #  # simulation settings of each specimen
@@ -920,5 +926,4 @@ ggplot(models.df,
 #    print(inset_plot, vp = vp)
 #  }
 #  # dev.off()
-#  
 

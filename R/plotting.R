@@ -70,11 +70,11 @@ plot_measurement <- function (file,
 #' @details
 #' `df.peaks` at least needs to contain the following columns:
 #'
-#' | **`species`** | **`measurements`** |  **`starts`** |  **`ends`** |
+#' **`measurements`** |  **`starts`** |  **`ends`** |
 #' | :----: | :----: |:----: |:----: |
-#' | `species.1` |  `measurements.1` | `starts.1` | `ends.1` |
-#' | `...` |  `...` |  `...` |  `...` |
-#' | `species.n` |  `measurements.n` | `starts.m` | `ends.m` |
+#' | `measurements.1` | `starts.1` | `ends.1` |
+#' | `...` |  `...` |  `...` |
+#' | `measurements.n` | `starts.m` | `ends.m` |
 #'
 #' Check `forceR::peaks.df` to see an example tibble.
 #'
@@ -118,8 +118,8 @@ plot_peaks <- function(df.peaks,
   #             path.plots = "./test_folder",
   #             show.progress = TRUE)
 
-  if(sum(colnames(df.peaks) %in% c("species", "starts", "ends", "measurements")) != 4){
-    stop ("column names of 'df.peaks' must contain 'species', 'starts', 'ends', 'measurements'.")
+  if(sum(colnames(df.peaks) %in% c("starts", "ends", "measurements")) != 3){
+    stop ("column names of 'df.peaks' must contain 'starts', 'ends', 'measurements'.")
   }
   if(sum(colnames(df.data) %in% c("t", "force", "measurement")) != 3){
     stop ("column names of 'df.data' must contain 't', 'force', 'measurement'.")

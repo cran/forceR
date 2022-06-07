@@ -169,7 +169,7 @@ reduce_frq <- function (df,
 #'   treated as if it was just one single time series. This is okay for data frames like that indeed only contain one
 #'   time series, but for data frames
 #'   with multiple time series, a grouping column needs to be defined. Default: `NULL`
-#' @return Returns a tibble reduced in the same format as the input tibble with an additional column called '"'`force`'.
+#' @return Returns a tibble in the same format as the input tibble with an additional column called '"'`force`'.
 #' @examples
 #' # convert y column of df.all to force column and add taxonomic data
 #' # using info from classifier
@@ -184,11 +184,11 @@ y_to_force <- function (df,
                         classifier,
                         measurement.col){
 
-  if(sum(colnames(df) %in% c("t", "y", "measurement")) != 3){
-    stop ("column names of 'df' must contain 't', 'y', and 'measurement'.")
+  if(sum(colnames(df) %in% c("t", "y")) != 2){
+    stop ("column names of 'df' must contain 't', 'y'.")
   }
-  if(sum(colnames(classifier) %in% c("species", "specimen", "amp", "lever.ratio")) != 4){
-    stop ("column names of 'classifier' must contain 'species', 'specimen', 'amp', 'lever.ratio'.")
+  if(sum(colnames(classifier) %in% c("specimen", "amp", "lever.ratio")) != 3){
+    stop ("column names of 'classifier' must contain 'specimen', 'amp', 'lever.ratio'.")
   }
   if(!is.character(measurement.col) & !is.null(measurement.col)){
     stop ("'measurement.col' must be NULL or a character string.")
@@ -196,15 +196,29 @@ y_to_force <- function (df,
   if(!is.null(measurement.col) & sum(colnames(df) %in% measurement.col) != 1){
     stop (paste0("column names of 'df' must contain '", measurement.col, "' as defined in 'measurement.col'."))
   }
-  if(length(setdiff(classifier$measurement, unique(df$measurement))) != 0){
+  if(!is.null(measurement.col) & sum(colnames(classifier) %in% measurement.col) != 1){
+    stop (paste0("column names of 'classifier' must contain '", measurement.col, "' as defined in 'measurement.col'."))
+  }
+  if(length(setdiff(classifier %>%
+                    pull(measurement.col),
+                    unique(df %>%
+                           pull(measurement.col)))) != 0){
     stop ("The following measuremnt numbers are missing from the df:\n",
-          setdiff(classifier$measurement, unique(df$measurement)))
+          setdiff(classifier %>%
+                    pull(measurement.col),
+                  unique(df %>%
+                           pull(measurement.col))))
   }
-  if(length(setdiff(unique(df$measurement), classifier$measurement)) != 0){
+  if(length(setdiff(df %>%
+                    pull(measurement.col),
+                    unique(classifier %>%
+                           pull(measurement.col)))) != 0){
     stop ("The following measuremnt numbers are missing from the classifier:\n",
-          setdiff(unique(df$measurement), classifier$measurement))
+          setdiff(df %>%
+                    pull(measurement.col),
+                  unique(classifier %>%
+                           pull(measurement.col))))
   }
-
   amp <- lever.ratio <- y <- species <- specimen <- NULL
 
   # df <- df.all.200
@@ -219,6 +233,6 @@ y_to_force <- function (df,
                 select(all_of(measurement.col), species, specimen, amp, lever.ratio),
               by=measurement.col) %>%
     mutate(force = y * lever.ratio / amp) %>%
-    select(species, specimen, measurement.col, t, force)
+    select(all_of(measurement.col), specimen, t, force)
   return(df)
 }

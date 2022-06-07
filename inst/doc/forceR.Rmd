@@ -45,7 +45,7 @@ Rühr, PT & Blanke, A (**in press**): `forceX` and `forceR`: a mobile setup and 
 
 ## Installation
 ### Official release
-You can install the official release of `forceR` from CRAN:
+You can install the official release of `forceR` from [CRAN](https://CRAN.R-project.org/package=forceR):
 ```{r warning=FALSE, message=FALSE, eval=F}
 install.packages('forceR')
 ```
@@ -436,6 +436,11 @@ Finally, we can start with the actual analysis of the data. First, we want to ca
 From the previous steps, df.all.200.tax already contains the columns `measurement`, `specimen` and `species`. Now, we can use the function `summarize_measurements()` to create a summary tibble by adding the column names for which we want a summary in `var1` and `var2`. `var1` must name the column that stores the unique measurement IDs, e.g. measurement number, to calculate minimal and maximal force values per measurement. As `var2` we will use 'specimen' to calculate the summary data per specimen from the min. and max. values of the measurements of that specimen. Thus, the resulting tibble will contain summaries of all measurements that were performed with the same specimen.
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height=6}
+# add species to df.all.200.tax
+df.all.200.tax <- df.all.200.tax %>% 
+  left_join(classifier %>% 
+              select(species, measurement))
+
 var1 = "measurement"
 var2 = "specimen"
 df.summary.specimen <- summarize_measurements(df.all.200.tax, 
@@ -511,8 +516,7 @@ ifelse(!dir.exists(path.data), dir.create(path.data), "./data already exists")
 Now we let `find_strongest_peaks()` identify all actual peak curves in all measurements:
 ```{r eval=TRUE, warning=FALSE, message=FALSE, include=FALSE}
 peaks.df <- find_strongest_peaks(df = df.all.200.tax, 
-                                 no.of.peaks = 5, 
-                                 plot.to.screen = FALSE,
+                                 no.of.peaks = 5,
                                  path.data = NULL,
                                  path.plots = NULL,
                                  show.progress = FALSE)
@@ -520,8 +524,7 @@ peaks.df <- find_strongest_peaks(df = df.all.200.tax,
 
 ```{r eval=FALSE, warning=FALSE, message=FALSE}
 peaks.df <- find_strongest_peaks(df = df.all.200.tax, 
-                                 no.of.peaks = 5, 
-                                 plot.to.screen = TRUE,
+                                 no.of.peaks = 5,
                                  path.data = path.data,
                                  path.plots = path.plots,
                                  show.progress = TRUE)
@@ -578,7 +581,7 @@ The function overwrites the start and end values of the selected peak in the sel
 *Note that the peak in the figures above looks differently from the one in your plots, but the principles are the same.*
 
 ### Normalize (rescale) peaks
-In the next step, we will use `rescale_peaks()` to rescale the time and force data so that they both range from 0 to 1.
+In the next step, we will use `rescale_peaks()` to rescale the time and force data so that they both range from 0 to 1. This function takes the data frame that contains the individual peak starts and ends, and the measurement data. Both data frames are linked by the 'measurement' column, so this column needs to be present in both data frames.
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, include=FALSE}
 # this prints too long to let it stay
@@ -763,12 +766,12 @@ Below we have compiled a self-sufficient `R` script to run all functions of `for
 ##
 ##
 ## AUTHOR:
-##      Peter T. Rühr
+##      Peter T. RÃ¼hr
 ##
 ## DATE CREATED:
 ##      2022-04-07
 ##
-## Copyright (c) Peter T. Rühr, 2022
+## Copyright (c) Peter T. RÃ¼hr, 2022
 ## Email: peter.ruehr@gmail.com
 ##
 ## ---------------------------
@@ -784,7 +787,10 @@ Below we have compiled a self-sufficient `R` script to run all functions of `for
 require(grid)
 
 # forceR
-require(forceR)
+install.packages("C:/Users/pruehr.EVOLUTION/Documents/forceR", 
+                 repos = NULL, 
+                 type = "source")
+library(forceR)
 
 # various plotting functions
 require(ggplot2)
@@ -999,9 +1005,6 @@ classifier <- classifier %>%
             type, no.of.bites))
 
 
-# here starts a forceR WORKFLOW for AFTER FILE LOADING ####
-# please see the package vignette for details on how to load files.
-
 # reduce sampling frequency to 200 Hz
 df.all.200 <- reduce_frq(df = df.all,
                          Hz = 200,
@@ -1011,6 +1014,11 @@ df.all.200 <- reduce_frq(df = df.all,
 df.all.200.tax <- y_to_force(df = df.all.200,
                              classifier = classifier,
                              measurement.col = "measurement")
+
+# add species to df.all.200.tax
+df.all.200.tax <- df.all.200.tax %>% 
+  left_join(classifier %>% 
+              select(species, measurement))
 
 # summarize force data per specimen
 df.summary.specimen <- summarize_measurements(df = df.all.200.tax,
@@ -1134,7 +1142,6 @@ hist(df.summary.species$BFQ.body_mass, breaks = 25)
 peaks.df <- find_strongest_peaks(
   df = df.all.200.tax,
   no.of.peaks = 5,
-  plot.to.screen = FALSE,
   path.data = NULL,
   path.plots = NULL,
   show.progress = TRUE)
@@ -1232,7 +1239,6 @@ main_plot <- ggplot(data = PCA.res, aes(x = PC1, y = PC2, col = peak.position)) 
         legend.position = "none")
 print(main_plot)
 
-
 # create an and plot an inlet with the bite shape
 # of the first bite of the first
 # simulation settings of each specimen
@@ -1264,6 +1270,5 @@ for(i in seq(1, nrow(PCA.res), 3)){
   print(inset_plot, vp = vp)
 }
 # dev.off()
-
 ```
 

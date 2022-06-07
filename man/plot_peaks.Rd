@@ -37,13 +37,13 @@ Plots one graph per peak curve and, if \code{plot.to.pdf == TURE}, saves all pea
 Plots the peaks identified by the function \code{find_peaks()}.
 }
 \details{
-\code{df.peaks} at least needs to contain the following columns:\tabular{cccc}{
-   \strong{\code{species}} \tab \strong{\code{measurements}} \tab \strong{\code{starts}} \tab \strong{\code{ends}} \cr
-   \code{species.1} \tab \code{measurements.1} \tab \code{starts.1} \tab \code{ends.1} \cr
-   \code{...} \tab \code{...} \tab \code{...} \tab \code{...} \cr
-   \code{species.n} \tab \code{measurements.n} \tab \code{starts.m} \tab \code{ends.m} \cr
-}
+\code{df.peaks} at least needs to contain the following columns:
 
+\strong{\code{measurements}} |  \strong{\code{starts}} |  \strong{\code{ends}} |
+| :----: | :----: |:----: |:----: |
+| \code{measurements.1} | \code{starts.1} | \code{ends.1} |
+| \code{...} |  \code{...} |  \code{...} |
+| \code{measurements.n} | \code{starts.m} | \code{ends.m} |
 
 Check \code{forceR::peaks.df} to see an example tibble.
 

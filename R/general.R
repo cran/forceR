@@ -14,6 +14,7 @@
 #' @importFrom readr read_delim read_csv write_csv cols
 #' @importFrom dplyr filter pull select mutate arrange slice group_by ungroup left_join summarize distinct
 #' first lead lag case_when bind_cols tibble as_tibble desc progress_estimated bind_rows all_of rename n
+#' mutate_at summarise
 #' @importFrom stats spline aggregate quantile setNames lm AIC predict complete.cases sd runif rnorm
 #' @importFrom graphics points lines locator title par boxplot axis
 #' @importFrom grDevices dev.off dev.print pdf

@@ -64,8 +64,8 @@ rescale_peaks <- function(df.peaks,
                           path.data = NULL,
                           show.progress = FALSE){
 
-  if(sum(colnames(df.peaks) %in% c("species","measurements","starts","ends")) != 4){
-    stop ("column names of 'df.peaks' must contain 'species','measurements','starts','ends'.")
+  if(sum(colnames(df.peaks) %in% c("measurements","starts","ends")) != 3){
+    stop ("column names of 'df.peaks' must contain 'measurements','starts','ends'.")
   }
 
   if(sum(colnames(df.data) %in% c("t","force","measurement")) != 3){
@@ -74,24 +74,24 @@ rescale_peaks <- function(df.peaks,
 
   if(!is.null(path.data)){
     if(!is.character(path.data)) stop ("'path.data' must be a character string.")
+    if(!file.exists(path.data)) stop ("Make sure that the folder ", path.data, " (defined by 'path.data') exists.")
   }
+
   # dplyr nulls
   species <- measurement <- peak <- specimen <- start <- end <- t.norm <- force.norm <- NULL
 
   #### linear mapping: normalization of x and y ####
   # create tibble with 1 peak per row with start and end
   # print("Converting table to one peak per row...")
-  df.peaks.1.per.row <- as_tibble(setNames(data.frame(matrix(nrow = 1, ncol = length(c("species", "measurement", "peak", "start", "end")))),
-                                           c("species", "measurement", "peak", "start", "end")))
+  df.peaks.1.per.row <- as_tibble(setNames(data.frame(matrix(nrow = 1, ncol = length(c("measurement", "peak", "start", "end")))),
+                                           c("measurement", "peak", "start", "end")))
   # change col types and delete first row
   df.peaks.1.per.row <- df.peaks.1.per.row %>%
-    mutate(species = as.character(species),
-           measurement = as.character(measurement),
+    mutate(measurement = as.character(measurement),
            peak = as.integer(peak)) %>%
     slice(0)
 
   for(b in 1:nrow(df.peaks)){ # nrow(df.peaks)
-    curr.species <-df.peaks$species[b]
     curr.peak.starts <- str_split(df.peaks$starts[b], pattern = "; ")[[1]]
     curr.peak.ends <- str_split(df.peaks$ends[b], pattern = "; ")[[1]]
     curr.measurements <- str_split(df.peaks$measurements[b], pattern = "; ")[[1]]
@@ -101,8 +101,7 @@ rescale_peaks <- function(df.peaks,
       curr.peak.start <- as.numeric(curr.peak.starts[c])
       curr.peak.end <- as.numeric(curr.peak.ends[c])
       df.peaks.1.per.row <- bind_rows(df.peaks.1.per.row,
-                                      tibble(species=curr.species,
-                                             measurement=curr.measurement,
+                                      tibble(measurement=curr.measurement,
                                              peak=c,
                                              start=curr.peak.start,
                                              end=curr.peak.end))
@@ -119,7 +118,7 @@ rescale_peaks <- function(df.peaks,
                                     # select(-t) %>%
                                     distinct(measurement, specimen),
                                   by="measurement") %>%
-    select(species, specimen, measurement, peak, start, end)
+    select(specimen, measurement, peak, start, end)
 
   if(!is.null(path.data)){
     # if(write.data == TRUE){
@@ -143,7 +142,13 @@ rescale_peaks <- function(df.peaks,
     curr.peak.window <- df.data.red.for.looping %>%
       ungroup() %>%
       filter(measurement == curr.measurement,
-             t >= curr.peak.start & t <= curr.peak.end) %>%
+             t >= curr.peak.start & t <= curr.peak.end)
+
+    # check if there is data for this combination
+    if(nrow(curr.peak.window) == 0) stop("No data found for peak ", curr.peak,
+                                         " of measurement ", curr.measurement, ".")
+
+    curr.peak.window <- curr.peak.window  %>%
       mutate(t.peak = t - first(t)) %>%
       mutate(t.norm =  round(seq(0, 1, length.out = n()),6),
              force.norm = round(rescale_to_range(force, from = 0, to = 1),6),
@@ -239,10 +244,12 @@ red_peaks_100 <- function(df,
 
   if(!is.null(path.data)){
     if(!is.character(path.data)) stop ("'path.data' must be a character string.")
+    if(!file.exists(path.data)) stop ("Make sure that the folder ", path.data, " (defined by 'path.data') exists.")
   }
 
   if(!is.null(path.plots)){
     if(!is.character(path.plots)) stop ("'path.plots' must be a character string.")
+    if(!file.exists(path.plots)) stop ("Make sure that the folder ", path.plots, " (defined by 'path.plots') exists.")
   }
 
   peak <- force.norm <- measurement <- specimen <- NULL
@@ -359,7 +366,9 @@ avg_peaks <- function(df,
 
   if(!is.null(path.data)){
     if(!is.character(path.data)) stop ("'path.data' must be a character string.")
+    if(!file.exists(path.data)) stop ("Make sure that the folder ", path.data, " (defined by 'path.data') exists.")
   }
+
 
   species <- index <- force.norm.100 <- NULL
 

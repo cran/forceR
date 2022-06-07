@@ -6,8 +6,8 @@ Description: For cleaning and analyses of animal closing force measurements.
     to load, plot and crop data, correct amplifier and baseline drifts, 
     identify individual peak shapes (bites), rescale (normalize) peak curves, 
     and find best polynomial fits to describe and analyze force curve shapes.
-Version: 1.0.14
-Date: 2022-05-10
+Version: 1.0.15
+Date: 2022-05-24
 License: MIT + file LICENSE
 URL: https://github.com/Peter-T-Ruehr/forceR
 BugReports: https://github.com/Peter-T-Ruehr/forceR/issues
@@ -23,6 +23,6 @@ Author: Peter T. Rühr <peter.ruehr@gmail.com>
 Maintainer: Peter T. Rühr <peter.ruehr@gmail.com>
 LazyData: true
 NeedsCompilation: no
-Packaged: 2022-05-10 14:53:03 UTC; pruehr
+Packaged: 2022-06-07 14:05:17 UTC; pruehr
 Repository: CRAN
-Date/Publication: 2022-05-10 15:40:05 UTC
+Date/Publication: 2022-06-07 14:50:02 UTC

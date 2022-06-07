@@ -136,7 +136,7 @@ find_best_fits <- function(df,
       if(length(coeffs) > 0){
 
         ### have a look at the fitted models visually
-        if(plot.to.screen == TRUE){
+        if(plot.to.screen == TRUE | !is.null(path.plots)){
           plot(curr.peak.100$index, curr.peak.100$force.norm.100.avg, type="n", lwd=3)
           for (i in 2:length(sp.models)) {
             lines(predict(sp.models[[i]]), lwd=0.5, col="grey50") # rainbow(length(sp.models))[i]
@@ -189,7 +189,8 @@ find_best_fits <- function(df,
     pdf(file.path(path.plots,
                   paste0("normalized_peaks_100_coeff_histo_", today(), ".pdf")),
         onefile = TRUE, paper = "a4", height = 14)
-
+    plot(table(all.coeffs),
+         main = paste0("best-fitting coeff = ", best.fit.coeff, "; n = ", length(all.coeffs)))
     invisible(dev.off())
   }
 

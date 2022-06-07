@@ -12,7 +12,6 @@ find_strongest_peaks(
   slope.length.end = 5,
   slope.thresh.start = 0.02,
   slope.thresh.end = 0.02,
-  plot.to.screen = FALSE,
   path.data = NULL,
   path.plots = NULL,
   show.progress = FALSE
@@ -40,9 +39,6 @@ current time point as the actual start of the current peak. Default: \code{0.04}
 \item{slope.thresh.end}{A numeric value defining the threshold at which to stop the sliding window and save the
 current time point as the actual end of the current peak. Default: \code{0.04}}
 
-\item{plot.to.screen}{A logical value indicating if results should be
-plotted in the current R plot device. Default: \code{FALSE}.}
-
 \item{path.data}{A string character defining where to save the results. If \code{NULL} (default),
 data is not stored in a file. Default: \code{NULL}.}
 
@@ -65,7 +61,7 @@ The column \strong{\code{ends}} contains as many peak ends as \code{no.of.peaks}
 Identifies peaks in a first iteration and optimizes the starts and ends of the strongest peaks per species in a second iteration.
 }
 \details{
-The input data frame or tibble needs to contain the following columns:\tabular{ccc}{
+The input data frame \code{df} needs to contain the following columns:\tabular{ccc}{
    \strong{\code{t}} \tab \strong{\code{force}} \tab \strong{\code{measurement}} \cr
    \code{t.1} \tab \code{force.1} \tab \code{measurement.1} \cr
    \code{...} \tab \code{...} \tab \code{...} \cr
@@ -88,7 +84,6 @@ peaks.df <- find_strongest_peaks(df = df.all.200.tax_filtered,
 
 # plot_peaks(df.peaks = peaks.df,
 #            df.data = df.all,
-#            additional.msecs = 20,
-#            plot.to.screen = TRUE)
+#            additional.msecs = 20)
 
 }

@@ -24,9 +24,6 @@
 #' @param slope.thresh.end A numeric value defining the threshold at which to stop the sliding window and save the
 #'   current time point as the actual end of the current peak. Default: `0.04`
 #'
-#' @param plot.to.screen A logical value indicating if results should be
-#' plotted in the current R plot device. Default: `FALSE`.
-#'
 #' @param path.data A string character defining where to save the results. If `NULL` (default),
 #' data is not stored in a file. Default: `NULL`.
 #'
@@ -36,7 +33,7 @@
 #' printed to the console. Default: `FALSE`.
 #'
 #' @details
-#' The input data frame or tibble needs to contain the following columns:
+#' The input data frame `df` needs to contain the following columns:
 #'
 #' | **`t`** | **`force`** |  **`measurement`** |
 #' | :----: | :----: |:----: |
@@ -69,8 +66,7 @@
 #'
 #' # plot_peaks(df.peaks = peaks.df,
 #' #            df.data = df.all,
-#' #            additional.msecs = 20,
-#' #            plot.to.screen = TRUE)
+#' #            additional.msecs = 20)
 #'
 #' @export
 find_strongest_peaks <- function(df,
@@ -80,7 +76,6 @@ find_strongest_peaks <- function(df,
                                  slope.length.end = 5,
                                  slope.thresh.start = 0.02,
                                  slope.thresh.end = 0.02,
-                                 plot.to.screen = FALSE,
                                  path.data = NULL,
                                  path.plots = NULL,
                                  show.progress = FALSE){
@@ -93,7 +88,6 @@ find_strongest_peaks <- function(df,
   #                       slope.length.end = 5,
   #                       slope.thresh.start = 0.02,
   #                       slope.thresh.end = 0.02,
-  #                       plot.to.screen = TRUE,
   #                       path.data = "./test_folder",
   #                       path.plots = "./test_folder",
   #                       show.progress = TRUE)
@@ -105,9 +99,7 @@ find_strongest_peaks <- function(df,
 
   if(!is.null(path.data)){
     if(!dir.exists(path.data)) stop ("Folder to store data does not exist: ", path.data, ".")
-  }
-  if(!is.null(path.plots)){
-    if(!dir.exists(path.plots)) stop ("Folder to store plots does not exist: ", path.plots, ".")
+    if(!is.character(path.plots)) stop ("'path.plots' must be a character string")
   }
 
   specimen <- species <- slope <- measurement <- NULL # here! classifier is needed below for species info adding - should be parsed in funciton?
@@ -116,6 +108,12 @@ find_strongest_peaks <- function(df,
   measurements.all <- sort(unique(df$measurement))
   BF.starts.ends.tibble <- as_tibble(setNames(data.frame(matrix(nrow = length(measurements.all), ncol = length(c("measurement", "specimen", "starts", "ends")))), c("measurement", "specimen", "starts", "ends")))
 
+  if(!is.null(path.plots)){
+    # print(paste0("Saving plots at ", path.plots, "/", today(),"_rescaled_peaks_100.pdf..."))
+    # on.exit(invisible(dev.off()), add = TRUE)
+    pdf(file.path(path.plots, paste0("initial_starts_and_ends_", today(), ".pdf")),
+        onefile = TRUE, paper = "a4", height = 14)
+  }
   for(i in 1:length(measurements.all)){ # 1:length(measurements.all)   (plot.start.i+120)
     # get current measurement
     curr.measurement <- measurements.all[i]
@@ -155,32 +153,26 @@ find_strongest_peaks <- function(df,
     number.of.starts <- length(starts.msecs)
     number.of.ends <- length(ends.msecs)
 
-    if(plot.to.screen == TRUE){
-      plot(curr.plot.window$t, curr.plot.window$force, type="l")
-      lines(c(0,max(curr.plot.window$t)), c(threshold,threshold), col = "green", type="l")
-      points(starts.msecs, rep(threshold, number.of.starts), pch = 16, cex = 0.5, col = "blue")
-      points(ends.msecs, rep(threshold, number.of.ends), pch = 16, cex = 0.5, col = "orange")
+    # if(plot.to.screen == TRUE){
+    plot(curr.plot.window$t, curr.plot.window$force, type="l")
+    lines(c(0,max(curr.plot.window$t)), c(threshold,threshold), col = "green", type="l")
+    points(starts.msecs, rep(threshold, number.of.starts), pch = 16, cex = 0.5, col = "blue")
+    points(ends.msecs, rep(threshold, number.of.ends), pch = 16, cex = 0.5, col = "orange")
 
-      curr.plot.title <- paste0("sp.: ", curr.specimen, "; meas.: ", curr.measurement, ". Found ", length(starts), " starts & ", length(starts), " ends.")
-      title(curr.plot.title, line = -2, adj = .98)
-    }
+    curr.plot.title <- paste0("sp.: ", curr.specimen, "; meas.: ", curr.measurement, ". Found ", length(starts), " starts & ", length(starts), " ends.")
+    title(curr.plot.title, line = -2, adj = .98)
+    # }
 
     if(show.progress == TRUE){
       print_progress(i, length(measurements.all))
     }
 
     # if(plot.to.pdf == TRUE){
-    if(!is.null(path.plots)){
-      # on.exit(invisible(dev.off()), add = TRUE)
-      dev.print(pdf,
-                file = file.path(path.plots,
-                                 paste0("initial_starts_and_ends_", curr.specimen,
-                                        "_", curr.measurement, "_", today(), ".pdf")),
-                paper = "a4r", width = 29, height = 21) # , height = 14
-    }
+
 
     # print(paste0("specimen: ", curr.specimen, "; measurement: ", curr.measurement, ". Found ", length(starts), " peak starts and ", length(starts), " peak ends."))
   }
+  invisible(dev.off())
 
   # find max BF per peak
   # print(paste0("Finding max. peak force per peak... (this may take a while)"))
@@ -260,6 +252,7 @@ find_strongest_peaks <- function(df,
 
         peaks.per.specimen.measurement <- length(max.bf.peaks.specimen.measurement)
 
+        # print(l)
         all.peaks.specimen.measurement <- as_tibble(rbind(all.peaks.specimen.measurement, cbind(peaks.starts.specimen.measurement, max.bf.peaks.specimen.measurement, peaks.ends.specimen.measurement,
                                                                                                 specimen = curr.specimen, measurement = specimen.measurements[l])))
       }
@@ -268,6 +261,16 @@ find_strongest_peaks <- function(df,
       print_progress(b, length(specimens))
     }
   }
+
+  # mutate numeric columsn to numeric
+  all.peaks.specimen.measurement <- all.peaks.specimen.measurement %>%
+    mutate_at(c('peaks.starts.specimen.measurement',
+                'max.bf.peaks.specimen.measurement',
+                'peaks.ends.specimen.measurement'),
+              as.numeric)
+
+  all.peaks.specimen.measurement %>%
+    arrange(desc(max.bf.peaks.specimen.measurement))
 
   # add species to all.peaks.specimen.measurement
   all.peaks.specimen.measurement <- left_join(all.peaks.specimen.measurement,
@@ -345,6 +348,10 @@ find_strongest_peaks <- function(df,
           slice(1) %>%
           pull(t)
 
+        # subtract one time step
+        t_step <- curr.peak.window.before.after$t[2] - curr.peak.window.before.after$t[1]
+        curr.peak.actual.start <- curr.peak.actual.start - t_step
+
         # get window after peak threshold start and stop
         msecs.after.peak <- 500
 
@@ -367,6 +374,8 @@ find_strongest_peaks <- function(df,
           ungroup() %>%
           slice(1) %>%
           pull(t) # + slope.length.msecs
+
+        curr.peak.actual.end <- curr.peak.actual.end + t_step
 
 
         # get actual peak window between peak start and stop
@@ -432,7 +441,7 @@ find_strongest_peaks <- function(df,
 #' @param path.data A string character defining where to save the results. If `NULL` (default),
 #' data is not stored in a file.
 #' @details
-#' # `df` needs to contain the following columns:
+#' # `df.data` needs to contain the following columns:
 #'
 #' | **`t`** | **`force`** |  **`measurement`** |
 #' | :----: | :----: |:----: |
@@ -462,8 +471,8 @@ correct_peak <- function(df.peaks,
   oldpar <- par(no.readonly = TRUE)    # code line i
   on.exit(par(oldpar))
 
-  if(sum(colnames(df.peaks) %in% c("species", "starts", "ends", "measurements")) != 4){
-    stop ("column names of 'df.peaks' must contain 'species', 'starts', 'ends', 'measurements'")
+  if(sum(colnames(df.peaks) %in% c("starts", "ends", "measurements")) != 3){
+    stop ("column names of 'df.peaks' must contain 'starts', 'ends', 'measurements'")
   }
 
   par(mar=c(5,4,4,2)+0.1, mfrow=c(1,1))
@@ -482,6 +491,8 @@ correct_peak <- function(df.peaks,
                               pull(measurements)))
   curr.peak.starts <- str_split(df.peaks$starts[row.number], pattern = "; ")[[1]]
   curr.peak.ends <- str_split(df.peaks$ends[row.number], pattern = "; ")[[1]]
+
+  if(length(curr.peak.starts) < peak) stop("There are only ", length(curr.peak.starts), " peaks available for this species - you chose peak no. ", peak, ".")
 
   curr.peak.start <- as.numeric(curr.peak.starts[peak])
   curr.peak.end <- as.numeric(curr.peak.ends[peak])
@@ -548,5 +559,117 @@ correct_peak <- function(df.peaks,
   } else {
     message("Terminated by user.")
   }
+
   return(df.peaks)
+}
+
+
+
+
+
+
+
+
+
+#' Peak Duration and Maximum Force
+#'
+#' Calculate duration and maximum force for each individual peak.
+#'
+#' @param df.peaks The resulting tibble of the function `find_peaks()`. See `?find_peaks` for more details.
+#' @param df.data A data frame or tibble in the below format. The columns `t` (time), `force`, `measurement`, and `specimen`.
+#'   (measurement ID) must be present. This will usually be the same table that was used before in `find_peaks()`.
+#' @param path.data A string character defining where to save the results. If `NULL` (default),
+#' data is not stored in a file.
+#' @param show.progress A logical value indicating if progress should be
+#' printed to the console. Default: `FALSE`.
+#' @details
+#' # `df.data` needs to contain the following columns:
+#'
+#' | **`t`** | **`force`** |  **`measurement`** |
+#' | :----: | :----: |:----: |
+#' | `t.1` |  `force.1` | `measurement.1` |
+#' | `...` |  `...` |  `...` |
+#' | `t.n` |  `force.n` | `measurement.m` |
+#'
+#' @return Changes values within `df.peaks` and returns the changed tibble.
+#' @examples
+#' # Using the forceR::df.all.200.tax dataset:
+#' \donttest{
+#' # This function needs user input.
+#'peaks.df <- correct_peak(df.peaks = forceR::peaks.df,
+#'                         df.data = forceR::df.all.200.tax,
+#'                         measurement = "m_01",
+#'                         peak = 1,
+#'                         additional.msecs = 5)
+#' }
+#' @export
+peak_duration_max_force <- function(df.peaks,
+                                    df.data,
+                                    path.data = NULL,
+                                    show.progress = FALSE){
+
+  if(sum(colnames(df.peaks) %in% c("starts", "ends", "measurements")) != 3){
+    stop ("column names of 'df.peaks' must contain 'starts', 'ends', 'measurements'")
+  }
+  if(sum(colnames(df.data) %in% c("t", "force", "measurement")) != 3){
+    stop ("column names of 'df.peaks' must contain 't', 'force', 'measurement'")
+  }
+
+  if(!is.null(path.data)){
+    # create log folder if existing not already
+    path.data.manual.peak.start.end.logs <- paste0(path.data, "/manual.peak.start.end.logs/")
+    ifelse(!dir.exists(path.data.manual.peak.start.end.logs), dir.create(path.data.manual.peak.start.end.logs), "./manual.peak.start.end.logs already exists")
+  }
+
+  # dplyr NULLs
+  start <- end <- measurement <- peak <- NULL
+
+  peaks_1_per_row <- as_tibble(setNames(data.frame(matrix(nrow = 1, ncol = length(c("measurement", "peak", "start", "end", "max_bf")))),
+                                        c("measurement", "peak", "start", "end", "max_bf")))
+  # change col types and delete first row
+  peaks_1_per_row <- peaks_1_per_row %>%
+    mutate(measurement = as.character(measurement),
+           peak = as.integer(peak)) %>%
+    slice(0)
+
+  for(b in 1:nrow(df.peaks)){ # nrow(df.peaks)
+    curr.measurements <- str_split(df.peaks$measurements[b], pattern = "; ")[[1]]
+    curr.peak.starts <- str_split(df.peaks$starts[b], pattern = "; ")[[1]]
+    curr.peak.ends <- str_split(df.peaks$ends[b], pattern = "; ")[[1]]
+
+    for(c in 1:length(curr.peak.starts)){
+      curr.measurement <- curr.measurements[c]
+      curr.peak.start <- as.numeric(curr.peak.starts[c])
+      curr.peak.end <- as.numeric(curr.peak.ends[c])
+
+      # get max_bf of that peak
+      curr_df.data <- df.data %>%
+        filter(measurement == curr.measurement)
+      curr_max_bf <- curr_df.data %>%
+        filter(t > curr.peak.start,
+               t < curr.peak.end) %>%
+        summarise(max_bf = max(force)) %>%
+        pull()
+
+      peaks_1_per_row <- bind_rows(peaks_1_per_row,
+                                   tibble(measurement=curr.measurement,
+                                          peak=c,
+                                          start=curr.peak.start,
+                                          end=curr.peak.end,
+                                          max_bf = curr_max_bf))
+    }
+    if(show.progress == TRUE){
+      forceR::print_progress(b, nrow(df.peaks))
+    }
+  }
+
+  peaks_1_per_row <- peaks_1_per_row %>%
+    mutate(duration = end-start)
+
+  if(!is.null(path.data)){
+    # save data
+    write_csv(peaks_1_per_row,
+              file.path(path.data, paste0("peak_duration_max_force_", today(), ".csv")))
+  }
+  return(peaks_1_per_row)
 }
