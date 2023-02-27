@@ -6,6 +6,9 @@
 \usage{
 find_best_fits(
   df,
+  degrees = 1:20,
+  threshold = 5,
+  zero_threshold = NULL,
   plot.to.screen = FALSE,
   path.data = NULL,
   path.plots = NULL,
@@ -13,7 +16,15 @@ find_best_fits(
 )
 }
 \arguments{
-\item{df}{The resulting tibble of the function \code{avg_peaks()}. See \code{?avg_peaks} for more details.}
+\item{df}{The resulting tibble of the function \code{avg_peaks()}. See below for more details.}
+
+\item{degrees}{Numerical vector of polynomial degrees to test. Cannot be infinitely high - if two high, throws error: \verb{'degree' must be less than number of unique points}.
+Default: \code{1:20}.}
+
+\item{threshold}{Percentage of AIC change compared to previous degree to fit the good-fit-criteria (s.a.). Default: \code{5}.}
+
+\item{zero_threshold}{Either numerical or \code{NULL}: If numerical, the function checks if the graph of the current model starts and ends near zero,
+e.g. below 0.2 if \code{zero_threshold = 0.2}. Default: \code{NULL}.}
 
 \item{plot.to.screen}{A logical value indicating if results should be
 plotted in the current R plot device. Default: \code{FALSE}.}
@@ -35,10 +46,15 @@ plotted to the plot device or saved as PDFs in \code{path.plots}.
 \description{
 Calculates best model fits for all curves based on AIC criterion. The function fits polynomial functions with 1 to 20 coefficients and uses the Akaike Information
 Criterion (AIC) to evaluate the goodness of the fits. A model is considered a good fit, when the percentage of change from one model to the next (e.g. a model with
-6 coefficients to a model with 7 coefficients) is \verb{< 5\%}. The first for models meeting this criterion are plotted as colored graphs and the AICs of these models
+6 coefficients to a model with 7 coefficients) is, e.g. \verb{< 5\%} when \code{threshold = 5}. The first for models meeting this criterion are plotted as colored graphs and the AICs of these models
 are visualized in a second plot for each curve. All first four coefficients per curve that fulfill the criterion are stored and in the end, a histogram of how
 often which coefficients were good fits is plotted as well. The function returns the numerical value of the coefficient that fulfilled the criterion of a good fit
 in most curves.
+}
+\details{
+#' This function expects a tibble made of three columns as \code{df}: \code{species} containing the species names,
+\code{index} numerical column, e.g. time (but can be arbitrary continuous unit), for each species,
+and \code{force.norm.100} containing the averaged and rescaled curve of each species.
 }
 \examples{
 # Using the forceR::peaks.df.100.avg dataset:

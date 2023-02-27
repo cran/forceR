@@ -2,15 +2,21 @@
 % Please edit documentation in R/cropping.R
 \name{convert_measurement}
 \alias{convert_measurement}
-\title{Convert LJStream *.dat file to standard time series}
+\title{Converts LJStream *.dat file to standard time series.}
 \usage{
-convert_measurement(file, path.data = NULL)
+convert_measurement(file, path.data = NULL, collect_garbage = FALSE)
 }
 \arguments{
 \item{file}{File path to raw measurement (*.dat file).}
 
 \item{path.data}{A string character defining where to save the results. If \code{NULL},
 data is not stored in a file. Default: \code{NULL}.}
+
+\item{collect_garbage}{Logical. If \code{TRUE}, then the \code{gc()} command will be
+run silently to try to clean up memory. This may help when running
+\code{convert_measurement} in a loop, even though memory cluttering cannot be
+fully prevented. If such a loop crashes, the loop should be split into
+several separate loops to convert all files. Default: \code{FALSE}.}
 }
 \value{
 Returns and, if \verb{path.data is not NULL}, saves data in

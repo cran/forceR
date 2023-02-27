@@ -41,7 +41,7 @@ At the end of this vignette you will find a self-sufficient workflow example tha
 
 Please cite the following publication when using the `forceR` package:
 
-Rühr, PT & Blanke, A (**in press**): `forceX` and `forceR`: a mobile setup and R package to measure and analyze a wide range of animal closing forces. *Methods in Ecology and Evolution* **XXX**: pp.XX-XX. doi: XXX
+Rühr, PT & Blanke, A (**2022**): `forceX` and `forceR`: a mobile setup and R package to measure and analyze a wide range of animal closing forces. *Methods in Ecology and Evolution* **XXX**: pp.XX-XX. doi: [10.1111/2041-210X.13909](https://doi.org/10.1111/2041-210X.13909)
 
 ## Installation
 ### Official release
@@ -148,13 +148,13 @@ ampdriftcorr.folder <- "C:/Users/pruehr.EVOLUTION/Documents/forceR_bkp_2022-03-0
 
 ```{r eval=FALSE, warning=FALSE, message=FALSE}
 # create file list with all cropped files that need amplifier drift corrections.
-#   Her we use the cropped.folder with the cropped measurements.
+#   Here we use the cropped.folder with the cropped measurements.
 file.list <- list.files(cropped.folder, 
                         pattern = "csv$",
                         full.names = TRUE)
 
 # define folder where to save the amplifier drift corrected file.
-#   If this folder exists, it will be created.
+#   If this folder does not yet exist, it will be created.
 ampdriftcorr.folder <- "./cropped/ampdriftcorr"
 
 for(filename in file.list){

@@ -191,8 +191,9 @@ rescale_peaks <- function(df.peaks,
 #'
 #' Reduces curves to 100 observations per peak.
 #'
-#' @param df The resulting tibble of the function `rescale_peaks()`. See `?rescale_peaks` for more details.
-#'   The columns `measurement` and `force.norm` must be present.
+#' @param df The resulting tibble of the function `rescale_peaks()`. The columns `species`, `specimen`, `measurement`, `peak`, and `force.norm` must be present.
+#' See `?rescale_peaks` for more details.
+#'
 #'
 #' @param plot.to.screen A logical value indicating if results should be
 #' plotted in the current R plot device. Default: `FALSE`.
@@ -238,8 +239,8 @@ red_peaks_100 <- function(df,
   oldpar <- par(no.readonly = TRUE)    # code line i
   on.exit(par(oldpar))
 
-  if(sum(colnames(df) %in% c("measurement","force.norm")) != 2){
-    stop ("column names of 'df' must contain 'measurement','force.norm'.")
+  if(sum(colnames(df) %in% c("species", "specimen", "measurement", "peak", "force.norm")) != 5){
+    stop ("column names of 'df' must contain 'species`, `specimen`,` 'measurement', 'force.norm'.")
   }
 
   if(!is.null(path.data)){
@@ -252,7 +253,7 @@ red_peaks_100 <- function(df,
     if(!file.exists(path.plots)) stop ("Make sure that the folder ", path.plots, " (defined by 'path.plots') exists.")
   }
 
-  peak <- force.norm <- measurement <- specimen <- NULL
+  peak <- force.norm <- measurement <- t.norm <- specimen <- NULL
 
   # reduce all peaks to 100 observations and plot
   # if(write.pdfs == TRUE){
@@ -267,15 +268,22 @@ red_peaks_100 <- function(df,
   species <- unique(df$species)
   df.peaks.100 <- NULL
   for(b in 1:length(species)){ # length(species)
+    # b <- which(species == "Pseudochorthippus_parallelus")
     curr.species <- species[b]
 
     curr.species.norm.df <- df %>%
       filter(species == curr.species)
+    if(!is.null(path.plots)){
+      plot(curr.species.norm.df %>%
+             select(t.norm, force.norm),
+           type  ="l")
+    }
 
     peaks <- unique(curr.species.norm.df %>%
                       pull(peak))
 
     for(c in peaks){
+      # c <- 1
       curr.peak.F <- curr.species.norm.df %>%
         filter(peak == c) %>%
         pull(force.norm)

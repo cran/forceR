@@ -181,11 +181,24 @@ amp_drift_corr <- function(filename,
   # correction constant
   # print(t.step)
 
-  # reference y
-  V0 <- 1
-
   # calculate change for t.step
-  corr.const <- V0*exp(-(t.step/tau))
+  # define function to round to significant digits
+  sign_digits <- function(x,d){
+    s <- format(x,digits=d)
+    if(grepl("\\.", s) && ! grepl("e", s)) {
+      n_sign_digits <- nchar(s) -
+        max( grepl("\\.", s), attr(regexpr("(^[-0.]*)", s), "match.length") )
+      n_zeros <- max(0, d - n_sign_digits)
+      s <- paste(s, paste(rep("0", n_zeros), collapse=""), sep="")
+    }
+    return(as.numeric(s))
+  }
+
+  # round to decimal with 16 significant digits
+  corr.const <- sign_digits(1*exp(-(t.step/tau)), 16)
+  if(show.progress == TRUE){
+    print(as.character(corr.const))
+  }
 
   # get first y value to make it V.0
   V.0 <- data$y[1]
@@ -242,40 +255,41 @@ amp_drift_corr <- function(filename,
   lin.cor.line.y <- c(0,data$y[nrow(data)]) # nrow(data)
   # lines(lin.cor.line.x, lin.cor.line.y, type="l", col = "orange")
 
-  baseline.sp <- spline(x=lin.cor.line.x, y=lin.cor.line.y, n = nrow(data)*2.1)
+  baseline.sp <- spline(x=lin.cor.line.x, y=lin.cor.line.y, n = nrow(data))
   baseline.sp <- bind_cols(x = baseline.sp$x, y = baseline.sp$y)
+  baseline.sp$x <- data$t
   # lines(baseline.sp$x, baseline.sp$y, type="l", col = "orange", lwd=1)
 
-  # set round factor: -1 = 10; 0 = same
-  if(t.step == 1 | t.step == 2){
-    round.factor <- 0
-  } else if(t.step == 10){
-    round.factor <- -1
-  } else if(t.step == 0.5){
-    round.factor <- "defined later"
-  }
+  # # set round factor: -1 = 10; 0 = same
+  # if(t.step == 1 | t.step == 2){
+  #   round.factor <- 0
+  # } else if(t.step == 10){
+  #   round.factor <- -1
+  # } else if(t.step == 0.5){
+  #   round.factor <- "defined later"
+  # }
 
   # filter points that lie within measured area
-  if(t.step == 1 | t.step == 2 | t.step == 10){
-    baseline.sp.filtered <- baseline.sp %>%
-      mutate(x = round(x,round.factor)) %>%
-      group_by(x) %>%
-      summarize(mean.V = mean(y)) %>%
-      filter(x>=0 & x<= max(data$t))
-    if(t.step == 2){
-      baseline.sp.filtered <- baseline.sp.filtered %>%
-        filter(x %% t.step == 0)
-    }
-  } else if(t.step == 0.5){
-    baseline.sp.filtered <- baseline.sp %>%
-      mutate(x = ceiling(x*2) / 2) %>%
-      group_by(x) %>%
-      summarize(mean.V = mean(y)) %>%
-      filter(x>=0 & x<= max(data$t))
-  }
+  # if(t.step == 1 | t.step == 2 | t.step == 10){
+    # baseline.sp.filtered <- baseline.sp %>%
+    #   mutate(x = round(x,round.factor)) %>%
+    #   group_by(x) %>%
+    #   summarize(mean.V = mean(y)) %>%
+    #   filter(x>=0 & x<= max(data$t))
+    # if(t.step == 2){
+    #   baseline.sp.filtered <- baseline.sp.filtered %>%
+    #     filter(x %% t.step == 0)
+    # }
+  # } else if(t.step == 0.5){
+  #   baseline.sp.filtered <- baseline.sp %>%
+  #     mutate(x = ceiling(x*2) / 2) %>%
+  #     group_by(x) %>%
+  #     summarize(mean.V = mean(y)) %>%
+  #     filter(x>=0 & x<= max(data$t))
+  # }
 
   # subtract new baseline from rawdata
-  data$y <- round(data$y-baseline.sp.filtered$mean.V,6)
+  data$y <- data$y-baseline.sp$y
   # lines(data$t[seq(1,nrow(data),res.reduction/t.step)], data$y[seq(1,nrow(data),res.reduction/t.step)], type="l", col = "darkgreen")
 
   if(write.PDFs == TRUE){

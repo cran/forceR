@@ -2,12 +2,20 @@
 #'
 #' Calculates best model fits for all curves based on AIC criterion. The function fits polynomial functions with 1 to 20 coefficients and uses the Akaike Information
 #'   Criterion (AIC) to evaluate the goodness of the fits. A model is considered a good fit, when the percentage of change from one model to the next (e.g. a model with
-#'   6 coefficients to a model with 7 coefficients) is `< 5%`. The first for models meeting this criterion are plotted as colored graphs and the AICs of these models
+#'   6 coefficients to a model with 7 coefficients) is, e.g. `< 5%` when `threshold = 5`. The first for models meeting this criterion are plotted as colored graphs and the AICs of these models
 #'   are visualized in a second plot for each curve. All first four coefficients per curve that fulfill the criterion are stored and in the end, a histogram of how
 #'   often which coefficients were good fits is plotted as well. The function returns the numerical value of the coefficient that fulfilled the criterion of a good fit
 #'   in most curves.
 #'
-#' @param df The resulting tibble of the function `avg_peaks()`. See `?avg_peaks` for more details.
+#' @param df The resulting tibble of the function `avg_peaks()`. See below for more details.
+#'
+#' @param degrees Numerical vector of polynomial degrees to test. Cannot be infinitely high - if two high, throws error: `'degree' must be less than number of unique points`.
+#' Default: `1:20`.
+#'
+#' @param threshold Percentage of AIC change compared to previous degree to fit the good-fit-criteria (s.a.). Default: `5`.
+#'
+#' @param zero_threshold Either numerical or `NULL`: If numerical, the function checks if the graph of the current model starts and ends near zero,
+#' e.g. below 0.2 if `zero_threshold = 0.2`. Default: `NULL`.
 #'
 #' @param plot.to.screen A logical value indicating if results should be
 #' plotted in the current R plot device. Default: `FALSE`.
@@ -20,6 +28,10 @@
 #'
 #' @param show.progress A logical value indicating if progress should be
 #' printed to the console. Default: `FALSE`.
+#'
+#' @details #' This function expects a tibble made of three columns as `df`: `species` containing the species names,
+#' `index` numerical column, e.g. time (but can be arbitrary continuous unit), for each species,
+#' and `force.norm.100` containing the averaged and rescaled curve of each species.
 #'
 #' @return Returns the a numerical value representing the number of coefficient that was most often under the first 4 models that were followed by an
 #'   AIC-change `<= 5%` by the next model. Additionally, plots showing the model fits and a histogram of the coefficients that met the 5%-criterion can be
@@ -36,23 +48,13 @@
 #' best.fit.poly
 #'
 find_best_fits <- function(df,
+                           degrees = 1:20,
+                           threshold = 5,
+                           zero_threshold = NULL,
                            plot.to.screen = FALSE,
                            path.data = NULL,
                            path.plots = NULL,
                            show.progress = FALSE){
-
-  # # testing
-  # find_best_fits (df = forceR::peaks.df.100.avg,
-  #                 plot.to.screen = FALSE,
-  #                 path.data = NULL,
-  #                 path.plots = NULL,
-  #                 show.progress = FALSE)
-  #
-  # find_best_fits (df = forceR::peaks.df.100.avg,
-  #                 plot.to.screen = TRUE,
-  #                 path.data = "./test_folder",
-  #                 path.plots = "./test_folder",
-  #                 show.progress = TRUE)
 
   oldpar <- par(no.readonly = TRUE)    # code line i
   on.exit(par(oldpar))
@@ -79,6 +81,7 @@ find_best_fits <- function(df,
   par(mfrow=c(3,2))
   taxa <- unique(df$species)
   coeffs.df <- NULL
+  # b=1
   for(b in 1:length(taxa)){ # length(taxa)
     curr.species <- taxa[b]
 
@@ -86,10 +89,12 @@ find_best_fits <- function(df,
       filter(species == curr.species)
 
     sp.models <- list()
-    for (i in 1:20) { # test 1st to n-th polynomial function
+    counter <- 1
+    for (i in degrees) { # test 1st to n-th polynomial function
       curr.coeff <- stats::poly(curr.peak.100$index, degree = i)
-      sp.models[[i]] <- curr.fit <- lm(curr.peak.100$force.norm.100.avg ~ curr.coeff)
+      sp.models[[counter]] <- curr.fit <- lm(curr.peak.100$force.norm.100.avg ~ curr.coeff)
       # print(summary(curr.fit)) # optional
+      counter <- counter+1
     }
 
     ### AIC criterion to decide which model fit is appropriate
@@ -103,32 +108,36 @@ find_best_fits <- function(df,
 
     aic.diffs <- c()
     aic.diffs.perc <- c()
-    for(i in 20:2){
+    for(i in rev(2:(length(degrees)))){
       curr.diff <- aics[[i-1]]-aics[[i]]
       aic.diffs <- c(aic.diffs, curr.diff)
       aic.diffs.perc <- c(aic.diffs.perc, abs(curr.diff*100/aics[[i]])) # aics[[i-1]]
     }
 
-    aic.results <- tibble(coeff.1=1:19,
-                          coeff.2 = 2:20,
+    aic.results <- tibble(coeff.1=1:(length(degrees)-1),
+                          coeff.2 = 2:length(degrees),
                           aic.diffs = rev(aic.diffs),
                           aic.diffs.perc = rev(aic.diffs.perc))
 
     how.many.coeffs.to.check <- 4
     coeff.colors <- c("orange", "cyan", "red", "magenta")
 
-
-    # check if starts and ends of coeffs are near 0
-    potential.coeffs.starts <- c()
-    for(m in 1:20){
-      if(predict(sp.models[[m]])[1] <= 0.2 & predict(sp.models[[m]])[1] >= -0.2 &
-         predict(sp.models[[m]])[100] <= 0.2 & predict(sp.models[[m]])[100] >= -0.2){
-        potential.coeffs.starts <- c(potential.coeffs.starts, m)
+    if(!is.null(zero_threshold)){
+      # check if starts and ends of coeffs are near 0
+      potential.coeffs.starts <- c()
+      for(m in 1:length(degrees)){
+        degree <- degrees[m]
+        if(predict(sp.models[[m]])[1] <= zero_threshold & predict(sp.models[[m]])[1] >= -zero_threshold &
+           predict(sp.models[[m]])[100] <= zero_threshold & predict(sp.models[[m]])[100] >= -zero_threshold){
+          potential.coeffs.starts <- c(potential.coeffs.starts, degree)
+        }
       }
+    } else{
+      potential.coeffs.starts <- degrees
     }
 
     if(!is.null(potential.coeffs.starts)){
-      potential.coeffs.perc <- aic.results$coeff.1[which(aic.results$aic.diffs.perc <= 5)]
+      potential.coeffs.perc <- aic.results$coeff.1[which(aic.results$aic.diffs.perc <= threshold)]
 
       coeffs <- intersect(potential.coeffs.starts, potential.coeffs.perc)[1:how.many.coeffs.to.check]
       coeffs <- coeffs[complete.cases(coeffs)]
@@ -139,12 +148,12 @@ find_best_fits <- function(df,
         if(plot.to.screen == TRUE | !is.null(path.plots)){
           plot(curr.peak.100$index, curr.peak.100$force.norm.100.avg, type="n", lwd=3)
           for (i in 2:length(sp.models)) {
-            lines(predict(sp.models[[i]]), lwd=0.5, col="grey50") # rainbow(length(sp.models))[i]
+            lines(curr.peak.100$index, predict(sp.models[[i]]), lwd=0.5, col="grey50") # rainbow(length(sp.models))[i]
           }
           lines(curr.peak.100$index, curr.peak.100$force.norm.100.avg, lwd=1)
           for(p in 1:length(coeffs)){
             curr.coeff <- coeffs[p]
-            lines(predict(sp.models[[curr.coeff]]), lwd=1, col=coeff.colors[p])
+            lines(curr.peak.100$index, predict(sp.models[[curr.coeff]]), lwd=1, col=coeff.colors[p])
           }
           title(main = paste0(curr.species), cex.main = 0.95)
 

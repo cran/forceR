@@ -13,8 +13,8 @@ red_peaks_100(
 )
 }
 \arguments{
-\item{df}{The resulting tibble of the function \code{rescale_peaks()}. See \code{?rescale_peaks} for more details.
-The columns \code{measurement} and \code{force.norm} must be present.}
+\item{df}{The resulting tibble of the function \code{rescale_peaks()}. The columns \code{species}, \code{specimen}, \code{measurement}, \code{peak}, and \code{force.norm} must be present.
+See \code{?rescale_peaks} for more details.}
 
 \item{plot.to.screen}{A logical value indicating if results should be
 plotted in the current R plot device. Default: \code{FALSE}.}

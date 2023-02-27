@@ -102,7 +102,7 @@ find_strongest_peaks <- function(df,
     if(!is.character(path.plots)) stop ("'path.plots' must be a character string")
   }
 
-  specimen <- species <- slope <- measurement <- NULL # here! classifier is needed below for species info adding - should be parsed in funciton?
+  specimen <- species <- slope <- measurement <- NULL # here! classifier is needed below for species info adding - should be parsed in function?
 
   # print("Initial rough threshold search for peaks...")
   measurements.all <- sort(unique(df$measurement))
@@ -127,7 +127,7 @@ find_strongest_peaks <- function(df,
     # plot(curr.plot.window$t, curr.plot.window$force, type="l")
 
     curr.specimen <- curr.plot.window %>%
-      slice(n=1) %>%
+      slice(1) %>%
       pull(specimen)
 
     threshold <- initial.threshold * max(curr.plot.window$force)
@@ -435,7 +435,7 @@ find_strongest_peaks <- function(df,
 #'   respective measurement ID within `df.peaks` and `df`.
 #' @param peak A numerical value defining the peak to be corrected.
 #' @param additional.msecs A numerical value defining the time before and after the originally defined window of the peak to be corrected. Higher
-#'   values allow defining start and end points further away from the original start and end points.
+#'   values allow defining start and end points further away from the original start and end points. Default: `500`.
 #'   @param path.data A string character defining where to save the result and log file. If `NULL` (default),
 #' data is not stored in files. Log files cannot be retrieved in this case.
 #' @param path.data A string character defining where to save the results. If `NULL` (default),
@@ -465,7 +465,7 @@ correct_peak <- function(df.peaks,
                          df.data,
                          measurement,
                          peak,
-                         additional.msecs,
+                         additional.msecs = 500,
                          path.data = NULL){
 
   oldpar <- par(no.readonly = TRUE)    # code line i

@@ -1,11 +1,15 @@
-#' Convert LJStream *.dat file to standard time series
-#'
 #' Converts LJStream *.dat file to standard time series.
 #'
 #' @param file File path to raw measurement (*.dat file).
 #'
 #' @param path.data A string character defining where to save the results. If `NULL`,
 #' data is not stored in a file. Default: `NULL`.
+#'
+#' @param collect_garbage Logical. If `TRUE`, then the `gc()` command will be
+#' run silently to try to clean up memory. This may help when running
+#' `convert_measurement` in a loop, even though memory cluttering cannot be
+#' fully prevented. If such a loop crashes, the loop should be split into
+#' several separate loops to convert all files. Default: `FALSE`.
 #'
 #' @return Returns and, if `path.data is not NULL`, saves data in
 #' csv-format in `path.data`. \cr
@@ -26,53 +30,62 @@
 #'
 #' @export
 convert_measurement <- function (file,
-                                 path.data = NULL){
-
+                                 path.data = NULL,
+                                 collect_garbage = FALSE){
   # # testing
   # convert_measurement (file = forceR_example(type = "LJStream"),
   #                                  path.data = NULL)
   # convert_measurement (file = forceR_example(type = "LJStream"),
   #                                  path.data = "./test_folder")
 
-  if(!is.character(file)) stop ("'file' must be a character string.")
-
-  # dplyr NULLs
   Time <- y0 <- NULL
 
-  if(!file.exists(file)) stop(paste0("File ", file, " does not exist!"))
-
-  if(!is.null(path.data)){
-    if(!dir.exists(path.data)) stop ("Folder to store plots does not exist: ", path.data, ".")
+  if (!is.character(file))
+    stop("'file' must be a character string.")
+  if (!file.exists(file))
+    stop(paste0("File ", file, " does not exist!"))
+  if (!is.null(path.data)) {
+    if (!dir.exists(path.data))
+      stop("Folder to store plots does not exist: ", path.data,
+           ".")
   }
 
-  res.reduction <- 10
   file.name <- basename(file)
 
-  data <- read_delim(file, delim = "\t", skip = 6,
+  data <- read_delim(file, delim = "\t",
+                     skip = 6,
+                     col_types = "ccc",
                      show_col_types = FALSE)
 
   # Check what the decimal is. Returns "" when it is a full stop, and the
   #   decimal, e.g. "," if it is not.
-  decimal <- gsub('[[:digit:]]+', '', data[1,1])
+  decimal <- gsub("[[:digit:]]+", "", data[2, 1])
 
-  if(decimal != ""){
+  if (decimal != '.') {
     # print(paste0("Converting \'", decimal, "\' to \'.\'..."))
-    data$Time <- as.numeric(gsub(decimal, ".", gsub("\\.", "", data$Time))) * 1000
-    data$y0 <- as.numeric(gsub(decimal, ".", gsub("\\.", "", data$y0)))
+    data$Time <- as.numeric(gsub(decimal, ".", gsub("\\.",
+                                                    "", data$Time))) * 1000
+    data$y0 <- as.numeric(gsub(decimal, ".", gsub("\\.",
+                                                  "", data$y0)))
+  } else {
+    data$Time <- as.numeric(data$Time) * 1000
+    data$y0 <- as.numeric(data$y0)
+  }
+  data <- data %>% as_tibble() %>% select(Time, y0) %>% rename(t = Time,
+                                                               y = y0)
+  if (!is.null(path.data)) {
+    write_csv(data, file.path(path.data, paste0(gsub("\\.dat$",
+                                                     "_converted\\.csv", basename(file)))), quote = "none")
   }
 
-  data <- data %>% as_tibble() %>%
-    select(Time, y0) %>%
-    rename(t = Time, y = y0)
-
-  # if(write.files == TRUE){
-  if(!is.null(path.data)){
-    write_csv(data, file.path(path.data,
-                              paste0(gsub("\\.dat$", "_converted\\.csv", basename(file)))),
-              quote = "none")
+  if(collect_garbage == TRUE){
+    print("cleaning memory")
+    rm(file.name)
+    rm(decimal)
+    invisible(gc(verbose = FALSE))
   }
+
   return(data)
-  # print("Done!")
 }
 
 
@@ -172,8 +185,14 @@ crop_measurement <- function (file,
 
   ceiling_dec <- function(x, level=1) round(x + 5*10^(-level-1), level)
   floor_dec <- function(x, level=1) round(x - 5*10^(-level-1), level)
-  start_time_msec <- which(data$t == ceiling_dec(cutoffs$x[length(cutoffs$x)-1], level = -1))
-  end_time_msec <-  which(data$t == floor_dec(cutoffs$x[length(cutoffs$x)], level = -1))
+  # start_time_msec <- which(data$t == ceiling_dec(cutoffs$x[length(cutoffs$x)-1], level = -1))
+  # end_time_msec <-  which(data$t == floor_dec(cutoffs$x[length(cutoffs$x)], level = -1))
+  # if(length(start_time_msec) == 0){
+  start_time_msec <-  which(data$t == as.character(ceiling_dec(cutoffs$x[length(cutoffs$x)-1], level = -1)))
+  # }
+  # if(length(end_time_msec) == 0){
+  end_time_msec <-  which(data$t == as.character(floor_dec(cutoffs$x[length(cutoffs$x)], level = -1)))
+  # }
 
   data_cut <- data[start_time_msec:end_time_msec,]
   data_cut$t <- data_cut$t - data_cut$t[1]
@@ -194,7 +213,7 @@ crop_measurement <- function (file,
 
   # if(write.files == TRUE){
   if(!is.null(path.data)){
-    write_csv(data_cut, paste0(path.data, sub("\\.[[:alnum:]]+$", "", file.name), "_cropped.csv"), quote = "none")
+    write_csv(data_cut, file.path(path.data, paste0(sub("\\.[[:alnum:]]+$", "", file.name), "_cropped.csv")), quote = "none")
   }
   return(data_cut)
   # print("Done!")

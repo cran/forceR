@@ -54,13 +54,13 @@ ampdriftcorr.folder <- "C:/Users/pruehr.EVOLUTION/Documents/forceR_bkp_2022-03-0
 
 ## ----eval=FALSE, warning=FALSE, message=FALSE---------------------------------
 #  # create file list with all cropped files that need amplifier drift corrections.
-#  #   Her we use the cropped.folder with the cropped measurements.
+#  #   Here we use the cropped.folder with the cropped measurements.
 #  file.list <- list.files(cropped.folder,
 #                          pattern = "csv$",
 #                          full.names = TRUE)
 #  
 #  # define folder where to save the amplifier drift corrected file.
-#  #   If this folder exists, it will be created.
+#  #   If this folder does not yet exist, it will be created.
 #  ampdriftcorr.folder <- "./cropped/ampdriftcorr"
 #  
 #  for(filename in file.list){

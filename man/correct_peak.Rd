@@ -9,7 +9,7 @@ correct_peak(
   df.data,
   measurement,
   peak,
-  additional.msecs,
+  additional.msecs = 500,
   path.data = NULL
 )
 }
@@ -25,7 +25,7 @@ respective measurement ID within \code{df.peaks} and \code{df}.}
 \item{peak}{A numerical value defining the peak to be corrected.}
 
 \item{additional.msecs}{A numerical value defining the time before and after the originally defined window of the peak to be corrected. Higher
-values allow defining start and end points further away from the original start and end points.
+values allow defining start and end points further away from the original start and end points. Default: \code{500}.
 @param path.data A string character defining where to save the result and log file. If \code{NULL} (default),
 data is not stored in files. Log files cannot be retrieved in this case.}
 
