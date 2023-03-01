@@ -1,4 +1,14 @@
-## `forceR` v1.0.18 (Release date: 2022-11-07)
+## `forceR` v1.0.20 (Release date: 2023-02-28)
+-   release of v1.0.19 to CRAN.
+
+## `forceR` v1.0.19 (Release date: 2023-02-28)
+
+### Minor changes:
+
+-   reduced time for example calculations of `find_strongest_peaks()` and `plot_peaks()` to meet CRAN calculation times.
+-   updated citation in README from 'under review' to published.
+
+## `forceR` v1.0.18 (Release date: 2023-02-27)
 
 ### Minor changes:
 
@@ -6,6 +16,7 @@
 -   changed CITATION file to meet new bibtext format criteria of CRAN.
 
 ### Bug fixes:
+
 -   changed `slice(n=1)` to `slice(1)` in `path.plots()` after Error flags in CRAN Package Check Results.
 
 ## `forceR` v1.0.17 (Release date: 2022-11-07)

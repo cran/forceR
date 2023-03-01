@@ -36,6 +36,6 @@ Check out the [News page](https://github.com/Peter-T-Ruehr/forceR/blob/main/NEWS
 
 ### Citation
 
-If you use this package, please cite the original publication (currently under review):
+If you use this package, please cite the original publication:
 
-Rühr, PT & Blanke, A (**2022**): forceX and `forceR`: a mobile setup and R package to measure and analyze a wide range of animal closing forces. *Methods in Ecology and Evolution*. doi: [10.1111/2041-210X.13909](https://doi.org/10.1111/2041-210X.13909).
+Rühr, PT & Blanke, A (**2022**): forceX and `forceR`: a mobile setup and R package to measure and analyze a wide range of animal closing forces. *Methods in Ecology and Evolution* **13**(9): p. 1938--1948. doi: [10.1111/2041-210X.13909](https://doi.org/10.1111/2041-210X.13909).

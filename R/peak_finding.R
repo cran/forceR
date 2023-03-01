@@ -54,18 +54,18 @@
 #' require(dplyr)
 #' # Using the forceR::df.all.200.tax dataset:
 #'
-#' # reduce dataset
-#' df.all.200.tax_filtered <- forceR::df.all.200.tax %>%
+#' # reduce dataset (only rows 40 to 95 of species A (containing data of
+#'   # measurement 1 and 2 (m_01 and m_02)))
+#' df.all.200.tax_filtered <- forceR::df.all.200.tax[40:95, ] %>%
 #'   filter(species == "species_A")
 #'
-#' # find strongest peaks
+#' # find the 4 strongest peaks
 #' peaks.df <- find_strongest_peaks(df = df.all.200.tax_filtered,
-#'                                  no.of.peaks = 5)
+#'                                  no.of.peaks = 4)
 #'
-#' # use plot results:
-#'
+#' # plot results (three peaks in measurement 1, 1 peak in measurement 2):
 #' # plot_peaks(df.peaks = peaks.df,
-#' #            df.data = df.all,
+#' #            df.data = df.all.200.tax_filtered,
 #' #            additional.msecs = 20)
 #'
 #' @export

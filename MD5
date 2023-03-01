@@ -1,7 +1,7 @@
-a8ba035eebee6ef2aba36bf3d1f32cff *DESCRIPTION
+0483e4099ca29f8619bade2ceeb78f9b *DESCRIPTION
 9c9a18a35be1afc060d8c2f00eb73e71 *LICENSE
 8a88b10ddd24ad788513a1bd3027aae4 *NAMESPACE
-851c98c86e6fd616c54ce08d8b3f6508 *NEWS.md
+5238aec49797a116b2109af75670ec1a *NEWS.md
 0aeaf1231e05eedb048f4eff64a52340 *R/cropping.R
 242717df503fa4b0a719a3ee827a3c45 *R/data.R
 6454ed4063d41b79444c720f801e2643 *R/drift_corrections_03.R
@@ -9,12 +9,12 @@ a8ba035eebee6ef2aba36bf3d1f32cff *DESCRIPTION
 97ee854349021597077d14ee1365e6ef *R/general.R
 c1b75cc9f0cbeb43f3fd7307b23b88fc *R/loading.R
 99819de27b94afbb5492d9dbd0a64292 *R/normalization.R
-00698a680fd121f8b59d5a6a37b4da7e *R/peak_finding.R
-66772ee7994c8eb92656e3b03f8aa60e *R/plotting.R
+7973c76f0fff82427b683490977886c2 *R/peak_finding.R
+57b52cce2ea7673e9337f45a7079e3a8 *R/plotting.R
 d54c16dcbffe7f5a93024905cef2aa90 *R/polynomial.R
 62572155de9b479fd415eaa2077a3f0c *R/summarizing.R
 6bd96e4aa9291d18bcfb5d5446d8b320 *R/time_series_manipulations.R
-8d76cd6d9011e6a9e80e13a6236e579e *README.md
+14b7c5ccb556c35f077905457efd3413 *README.md
 88a7a9bba99b95ab5027047f585e1252 *build/vignette.rds
 f83bbe693200de73cacec06127a2ea2e *data/classifier.rda
 c8ebe9fc5ad7405c63bdb0294efb66dd *data/df.all.200.rda
@@ -28,7 +28,7 @@ ca165b1899a21ac5f4f6204eb10f02d9 *data/peaks.df.rda
 6d68994db5de49f47095b8e14a78dd48 *inst/CITATION
 84d547b548df36f6eb7450a65425c139 *inst/doc/forceR.R
 0de085427b242277864ef32d2f1e24cf *inst/doc/forceR.Rmd
-3731974f1891b9a0d48f6d0acc243af1 *inst/doc/forceR.html
+03a842c43a6e6355ef99c38e3ac0a638 *inst/doc/forceR.html
 2b6d552f3cdc0839d09d5fbb70bd9f9a *inst/extdata/LJStream/0001_C_big_LJStream_0.dat
 5e257113090db108d71a40a5bf9e57d6 *inst/extdata/ampdriftcorr/0001_C_big_ampdriftcorr.csv
 11686e1f240b4380f3dfdcb49cce6a1f *inst/extdata/raw/0001_C_big.csv
@@ -43,7 +43,7 @@ dd2e3d3532ffce513b1b53d1551c03b6 *man/crop_measurement.Rd
 6ea5b6a059d2b63a483f1c3fcb4421d0 *man/df.all.200.tax.Rd
 dfb3ab972831b94db13c0b0392f96daf *man/df.all.Rd
 100fe5e26a312f76de1da276b6c9c032 *man/find_best_fits.Rd
-ac4ddd9da883524a13083aacf03f0ee8 *man/find_strongest_peaks.Rd
+627d3c898e7ad3f2c857ffb77da37960 *man/find_strongest_peaks.Rd
 a5b740bdd84ae3e600004ea94f3f29f0 *man/forceR_example.Rd
 cb112a3a062ef397c34e58516afba151 *man/load_mult.Rd
 9f98e2ca25ae35c35f07cb15921c3875 *man/load_single.Rd
@@ -55,7 +55,7 @@ da49bea92f38baebc57020e3562d319a *man/peaks.df.Rd
 0ba2d68cfde175a98551f9e4d26224bf *man/peaks.df.norm.100.Rd
 13e589db172288120f456840f83e2f0a *man/peaks.df.norm.Rd
 437443538322f0d8788705b126471d73 *man/plot_measurement.Rd
-bd4703b566e875b9fad8d0b7ddd27c31 *man/plot_peaks.Rd
+badde528042fba6ffe06f336bb9ee3d1 *man/plot_peaks.Rd
 3cacbc737befb7898d5c787c002dbe3f *man/print_progress.Rd
 28ead898597ff87f1a52a94640d4a343 *man/red_peaks_100.Rd
 a8f38238db97948fd8a2e004f6b1ab84 *man/reduce_frq.Rd

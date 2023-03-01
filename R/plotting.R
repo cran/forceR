@@ -94,10 +94,10 @@ plot_measurement <- function (file,
 #' Plots one graph per peak curve and, if `plot.to.pdf == TURE`, saves all peak curves as one PDF at `path.plots`.
 #'
 #' @examples
-#' # Using the forceR::peaks.df and forceR::df.all.200.tax datasets:
+#' # Using the first row of forceR::peaks.df and the forceR::df.all.200.tax dataset:
 #'
 #' # plot peaks
-#' plot_peaks(df.peaks = forceR::peaks.df,
+#' plot_peaks(df.peaks = forceR::peaks.df[1, ],
 #'            df.data = forceR::df.all.200.tax,
 #'            additional.msecs = 20) # instead of the default (2000) because of
 #'                                   # the highly downsampled example dataset.
